@@ -148,6 +148,26 @@ def main() -> int:
         changed = True
         print("halt cleared by manual reset")
 
+    # A committed run marker means the previous run started but never reached postflight
+    # (e.g. the Routine session died). Count it as a failed run so recovery/halting apply.
+    stale = state.get("run")
+    if stale and not stale.get("dry_run"):
+        stats = state["stats"]
+        stats["total_runs"] = max(stats["total_runs"], stale.get("number") or 0)
+        stats["failed_runs"] += 1
+        stats["consecutive_failures"] += 1
+        state["last_run"] = {
+            "number": stale.get("number"), "outcome": "crashed", "mode": stale.get("mode"),
+            "started_at": stale.get("started_at"), "ended_at": None, "phase": state["phase"],
+            "summary": "run did not finish (no postflight)", "url": stale.get("url"), "notes": [],
+        }
+        if stats["consecutive_failures"] >= cfg["max_consecutive_failures"]:
+            state["halted"] = True
+            state["halt_reason"] = f"{stats['consecutive_failures']} consecutive failed runs (last crashed)"
+        state["run"] = None
+        changed = True
+        print(f"previous run #{stale.get('number')} did not finish; recorded as crashed")
+
     # ---- termination / gating conditions -------------------------------------------
     reason = None
     if cfg["paused"]:
@@ -176,7 +196,8 @@ def main() -> int:
 
     lr = state.get("last_run") or {}
     ct = state.get("current_task")
-    recovery = bool(ct and ct.get("status") == "in_progress") or lr.get("outcome") in ("failure", "cancelled")
+    recovery = (bool(ct and ct.get("status") == "in_progress")
+                or lr.get("outcome") in ("failure", "cancelled", "crashed"))
 
     issues = load_issues()
     RUN_CONTEXT_PATH.write_text(

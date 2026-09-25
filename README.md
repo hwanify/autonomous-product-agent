@@ -34,3 +34,11 @@ product/                   에이전트가 만드는 제품 코드
 - 지시: `agent-inbox` 라벨을 붙인 Issue 작성, 또는 Run workflow 의 `instruction` 입력
 - 정지: `state/config.json` 에서 `"paused": true`
 - 자동 실행: `state/config.json` 에서 `"schedule_enabled": true` (6시간마다)
+
+## 실행 방식 2가지
+1. **Claude Code Routine (Claude 요금제 사용, API 키 불필요)** — claude.ai/code 의 Routine 이 예약 시각에 새 세션을 열고
+   `bash agent/scripts/routine_run.sh start` → 작업 1개 수행 → `bash agent/scripts/routine_run.sh finish success` 를 실행.
+   Routine 관리(주기 변경/중지): claude.ai/code 의 Routines 메뉴.
+2. **GitHub Actions** (`.github/workflows/agent.yml`) — `ANTHROPIC_API_KEY` 또는 `CLAUDE_CODE_OAUTH_TOKEN` Secret 필요.
+
+두 방식 모두 같은 `state/` 와 `agent/work` 브랜치를 사용하므로 섞어 써도 이어서 작업합니다.
