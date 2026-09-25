@@ -1,0 +1,33 @@
+name: Agent Self-test
+
+# 하네스 스크립트/상태 파일/제품 테스트를 검증 (Claude 호출 없음, 비용 0)
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Harness unit tests
+        run: python3 -m unittest discover -s agent/tests -v
+      - name: Validate state files
+        run: python3 agent/scripts/validate_state.py
+      - name: Product tests (if present)
+        run: |
+          if [ -f product/package.json ]; then
+            cd product && npm test
+          else
+            echo "No product yet"
+          fi

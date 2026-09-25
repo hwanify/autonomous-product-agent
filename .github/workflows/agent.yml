@@ -1,0 +1,204 @@
+name: Autonomous Product Agent
+
+# 한 번 실행 = 에이전트 작업 1개. 무한 루프 없음:
+#  - 실행 조건/중단 조건은 agent/scripts/preflight.py (paused, halted, max_total_runs, schedule_enabled)
+#  - 실행 1회의 한도는 --max-turns (state/config.json profiles) + timeout-minutes
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "실행 모드 (비워두면 state/config.json 의 mode 사용)"
+        type: choice
+        options: ["", "test", "live"]
+        default: ""
+      instruction:
+        description: "에이전트에게 줄 지시 (선택, state/inbox.md 에 추가됨)"
+        type: string
+        required: false
+      dry_run:
+        description: "Claude 를 호출하지 않고 파이프라인만 점검 (API 비용 0)"
+        type: boolean
+        default: false
+      reset_halt:
+        description: "연속 실패로 정지된 에이전트를 재개"
+        type: boolean
+        default: false
+  schedule:
+    # 6시간마다. state/config.json 의 schedule_enabled 가 true 일 때만 실제로 동작.
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+concurrency:
+  group: autonomous-product-agent
+  cancel-in-progress: false
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js (product tests)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Configure git
+        run: |
+          git config user.name "product-agent[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Select working branch
+        id: branch
+        run: |
+          TARGET=$(python3 -c "import json;c=json.load(open('state/config.json'));print(c.get('commit_target','work_branch'))")
+          if [ "$TARGET" = "default_branch" ]; then
+            BRANCH="$DEFAULT_BRANCH"
+          else
+            BRANCH=$(python3 -c "import json;print(json.load(open('state/config.json')).get('work_branch','agent/work'))")
+          fi
+          echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
+          if [ "$BRANCH" != "$(git rev-parse --abbrev-ref HEAD)" ]; then
+            if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
+              git checkout -B "$BRANCH" "origin/$BRANCH"
+              # 사람이 main 에서 수정한 설정/하네스 파일을 작업 브랜치로 동기화.
+              # (.github 는 제외: GITHUB_TOKEN 은 workflow 파일을 푸시할 수 없음. workflow 는 항상 main 의 것으로 실행됨)
+              git checkout "origin/$DEFAULT_BRANCH" -- agent CLAUDE.md mission.md state/config.json
+              if ! git diff --cached --quiet; then
+                git commit -m "agent: sync harness and config from $DEFAULT_BRANCH"
+              fi
+            else
+              git checkout -b "$BRANCH"
+            fi
+          fi
+          echo "Working on branch: $BRANCH"
+
+      - name: Collect inbox issues
+        continue-on-error: true
+        run: |
+          LABEL=$(python3 -c "import json;print(json.load(open('state/config.json')).get('inbox_issue_label','agent-inbox'))")
+          # 저장소 소유자가 작성한 이슈만 (외부인의 프롬프트 주입 방지)
+          gh issue list --state open --label "$LABEL" --author "${{ github.repository_owner }}" \
+            --json number,title,body,url --limit 5 > "$RUNNER_TEMP/issues.json" || echo "[]" > "$RUNNER_TEMP/issues.json"
+          cat "$RUNNER_TEMP/issues.json"
+
+      - name: Preflight (state check & run gating)
+        id: pre
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_MODE: ${{ inputs.mode }}
+          INPUT_INSTRUCTION: ${{ inputs.instruction }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+          INPUT_RESET_HALT: ${{ inputs.reset_halt }}
+          ISSUES_FILE: ${{ runner.temp }}/issues.json
+        run: python3 agent/scripts/preflight.py
+
+      - name: Check Claude credentials
+        if: steps.pre.outputs.skip == 'false' && steps.pre.outputs.dry_run != 'true'
+        env:
+          HAS_API_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+          HAS_OAUTH: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
+        run: |
+          if [ "$HAS_API_KEY" != "true" ] && [ "$HAS_OAUTH" != "true" ]; then
+            echo "::error::Repository secret ANTHROPIC_API_KEY (or CLAUDE_CODE_OAUTH_TOKEN) is not set. Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - name: Run Claude Code agent
+        id: claude
+        if: steps.pre.outputs.skip == 'false' && steps.pre.outputs.dry_run != 'true'
+        continue-on-error: true
+        timeout-minutes: 35
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: ${{ steps.pre.outputs.prompt }}
+          claude_args: ${{ steps.pre.outputs.claude_args }}
+
+      - name: Restore harness files touched by the agent
+        if: always() && steps.pre.outputs.skip == 'false'
+        run: |
+          # postflight 가 변조되지 않도록 먼저 원상복구 (나머지 보호 경로는 postflight 가 처리)
+          git checkout HEAD -- agent .github state/config.json 2>/dev/null || true
+          git clean -fdq -- agent .github || true
+
+      - name: Postflight (record progress & outcome)
+        id: post
+        if: always() && steps.pre.outputs.skip == 'false'
+        env:
+          CLAUDE_OUTCOME: ${{ steps.pre.outputs.dry_run == 'true' && 'dry_run' || steps.claude.outcome }}
+          COMMIT_MSG_FILE: ${{ runner.temp }}/commit_msg.txt
+          ISSUE_REPLIES_FILE: ${{ runner.temp }}/issue_replies.json
+        run: |
+          python3 agent/scripts/postflight.py
+          python3 agent/scripts/validate_state.py || echo "::warning::state validation reported problems (see above)"
+
+      - name: Commit & push
+        if: always() && steps.pre.outputs.skip == 'false'
+        env:
+          BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+          else
+            git commit -F "$RUNNER_TEMP/commit_msg.txt"
+          fi
+          for i in 1 2 3 4; do
+            if git push -u origin "HEAD:$BRANCH"; then exit 0; fi
+            sleep $((2 ** i))
+            git pull --rebase origin "$BRANCH" || true
+          done
+          echo "::error::push failed after retries"
+          exit 1
+
+      - name: Reply to handled issues
+        if: always() && steps.pre.outputs.skip == 'false'
+        continue-on-error: true
+        run: |
+          python3 - <<'EOF'
+          import json, os, subprocess
+          path = os.path.join(os.environ["RUNNER_TEMP"], "issue_replies.json")
+          if not os.path.exists(path):
+              raise SystemExit(0)
+          for item in json.load(open(path, encoding="utf-8")):
+              n = str(item.get("number"))
+              reply = (item.get("reply") or "처리했습니다.") + f"\n\n— product-agent ({os.environ['RUN_URL']})"
+              subprocess.run(["gh", "issue", "comment", n, "--body", reply], check=False)
+              subprocess.run(["gh", "issue", "close", n], check=False)
+          EOF
+
+      - name: Open pull request for review
+        if: always() && steps.pre.outputs.skip == 'false' && steps.branch.outputs.name != env.DEFAULT_BRANCH
+        continue-on-error: true
+        env:
+          BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          OPEN=$(python3 -c "import json;print(str(json.load(open('state/config.json')).get('open_pull_request', True)).lower())")
+          [ "$OPEN" = "true" ] || exit 0
+          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            gh pr create --head "$BRANCH" --base "$DEFAULT_BRANCH" \
+              --title "Agent work: autonomous product development" \
+              --body "에이전트의 작업 결과입니다. 현재 상태는 \`state/STATUS.md\`, 기록은 \`state/progress.md\` / \`state/decisions.md\` 를 확인하세요. 이 PR 은 실행될 때마다 자동으로 갱신됩니다."
+          fi
+
+      - name: Fail job if agent failed
+        if: steps.claude.outcome == 'failure'
+        run: |
+          echo "::error::Claude run failed. Partial state was committed; next run resumes (RECOVERY)."
+          exit 1
