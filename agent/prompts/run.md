@@ -10,5 +10,5 @@
 6. `state/progress.md`, `state/decisions.md`, `state/state.json`(run_summary 포함) 를 갱신한다.
 7. `python3 agent/scripts/validate_state.py` 를 실행해 통과시킨 뒤 종료한다.
 
-git commit/push 는 하지 마라 (workflow 가 한다). 보호 경로는 수정하지 마라.
+git commit/push 는 직접 하지 마라 (GitHub Actions workflow 또는 `agent/scripts/routine_run.sh finish` 가 한다). 보호 경로는 수정하지 마라.
 {recovery_line}

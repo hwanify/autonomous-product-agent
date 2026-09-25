@@ -9,7 +9,7 @@
 ## 0. 절대 규칙
 
 1. **1회 실행 = 1개 작업.** 작업 하나를 끝내거나(done), 안전하게 중단 지점을 기록(partial)하고 종료한다.
-2. **git commit / push 를 직접 하지 않는다.** 커밋은 workflow(postflight)가 한다. 너는 파일만 수정한다.
+2. **git commit / push 를 직접 하지 않는다.** 커밋은 GitHub Actions workflow 또는 Routine 의 `bash agent/scripts/routine_run.sh finish` 가 한다. 너는 파일만 수정한다.
 3. **보호 경로는 수정하지 않는다**: `.github/`, `agent/`, `CLAUDE.md`, `mission.md`, `state/config.json`, `state/runs.jsonl`.
    수정해도 postflight가 자동으로 되돌린다. 하네스 개선이 필요하면 `state/decisions.md` 에 "하네스 변경 제안"으로 기록한다.
 4. **기존 코드를 함부로 삭제하지 않는다.** 삭제가 필요하면 이유를 decisions.md 에 먼저 남긴다.

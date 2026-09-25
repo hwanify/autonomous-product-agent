@@ -188,6 +188,19 @@ class FlowTests(unittest.TestCase):
         self.repo.run("preflight.py")
         self.assertEqual(self.repo.outputs()["skip"], "true")
 
+    def test_unfinished_run_marker_counts_as_crash(self):
+        self.repo.run("preflight.py")
+        # session died: the run marker was committed but postflight never ran
+        self.repo.git("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qam", "started")
+        (self.repo.tmp / "out").unlink()
+        r = self.repo.run("preflight.py")
+        self.assertIn("crashed", r.stdout)
+        s = self.repo.state()
+        self.assertEqual(s["last_run"]["outcome"], "crashed")
+        self.assertEqual(s["stats"]["failed_runs"], 1)
+        self.assertEqual(s["run"]["number"], 2)
+        self.assertIn("RECOVERY", (self.repo.dir / "state" / "run_context.md").read_text())
+
     def test_dry_run_does_not_count(self):
         self.repo.run("preflight.py", INPUT_DRY_RUN="true")
         self.assertEqual(self.repo.outputs()["dry_run"], "true")
