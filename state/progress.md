@@ -115,3 +115,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: `NewTimerModal.tsx` 에 "프리셋으로 저장" 스위치 추가(onCreate 시그니처에 `saveAsPreset` 인자 추가). `components/PresetList.tsx` 신규 작성 — 저장된 프리셋을 가로 스크롤 칩으로 보여주고 탭하면 즉시 시작, ×로 삭제. `screens/Home.tsx` 에서 타이머 시작 로직을 `startTimer` 공통 함수로 뽑아내 "새로 만들기"와 "프리셋으로 시작"이 같은 경로(생성+알림 예약)를 타도록 함. 마운트 시 `loadPresets()` 로 AsyncStorage 에서 프리셋을 불러오고, 저장/삭제 시 `savePresets()` 로 즉시 반영. `npx tsc --noEmit` 통과, 기존 테스트 35개 전부 유지(lib/*.ts 로직은 변경 안 함, UI 배선만 추가).
 - 산출물: product/components/PresetList.tsx, product/components/NewTimerModal.tsx(수정), product/screens/Home.tsx(수정), product/README.md
 - 다음 할 일: T-013 — product/README.md 최종 정리(npx expo start 실행법 재확인, Expo Go 로 여는 방법). 이걸로 design phase 가 등록한 구현 작업(T-007~T-013)이 모두 끝나 phase 전이를 검토해야 함(→ test).
+
+## Run #14 — 2026-09-26 07:04 UTC — phase: implement → test
+- 작업: T-013 product/README.md 최종 정리
+- 결과: done
+- 한 일: 최종 sanity check(`npx tsc --noEmit`, `npm test` 35개 통과) 확인 후 README 를 전면 재작성 — 사용법(타이머 생성/일시정지/재개/취소/프리셋), 테스트 현황(35개, 모듈별 분해), 파일 구조 트리, "알려진 한계"(실기기 알림 미검증, D-011 참조), 패키지 추가 시 참고사항(D-013 절차)까지 한 문서에 정리. docs/design/mvp.md §6 이 등록한 구현 작업(T-007~T-013) 전부 완료 확인 → backlog 에 phase:"implement" 작업 없음 → CLAUDE.md §3 전이 규칙에 따라 phase `implement` → `test` 전이(D-015). test phase 완료 조건("테스트 전부 통과", 산출물 docs/reviews/test-<n>.md)에 맞춰 backlog 에 T-014(자동화 테스트 재확인)와 T-015(사람 실기기 검증 hand-off, T-008 과 같은 blocked+inbox 패턴 재사용)를 등록.
+- 산출물: product/README.md(전면 재작성)
+- 다음 할 일: T-014 — 자동화 테스트 전체 재실행 + docs/reviews/test-1.md 작성. 그 다음 T-015(사람에게 실기기 검증 요청, blocked 전환).

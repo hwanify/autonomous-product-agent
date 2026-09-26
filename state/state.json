@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "phase": "implement",
+  "phase": "test",
   "cycle": 1,
   "product": {
     "name": "요리용 멀티 타이머",
@@ -10,13 +10,25 @@
   "current_task": null,
   "backlog": [
     {
-      "id": "T-013",
-      "title": "product/README.md 최종 정리: npx expo start 실행법, Expo Go 로 QR 스캔해서 여는 방법",
-      "phase": "implement",
+      "id": "T-014",
+      "title": "자동화 테스트 전체 재실행(npm test, npx tsc --noEmit) + 결과를 docs/reviews/test-1.md 에 기록",
+      "phase": "test",
       "priority": 1
+    },
+    {
+      "id": "T-015",
+      "title": "[사람 hand-off] 실기기(Expo Go) 수동 시나리오 검증 요청 — 라면/계란 등 여러 타이머 동시 실행 후 백그라운드/종료 상태에서 알림이 오는지 확인. current_task.status=blocked 전환, state/inbox.md 회신 대기. 성공→review 진행, 실패→decisions.md 기록 후 explore(cycle+1) pivot 제안(D-007/D-015 조건)",
+      "phase": "test",
+      "priority": 2
     }
   ],
   "completed_tasks": [
+    {
+      "id": "T-013",
+      "title": "product/README.md 최종 정리 (구현 작업 T-007~T-013 전부 완료)",
+      "phase": "implement",
+      "run": 14
+    },
     {
       "id": "T-012b",
       "title": "프리셋 리스트 UI(PresetList) + NewTimerModal 저장 옵션 — lib/presets.ts 연결",
@@ -92,36 +104,26 @@
   ],
   "run_summary": "",
   "handled_issues": [],
-  "run": {
-    "number": 14,
-    "mode": "test",
-    "status": "running",
-    "started_at": "2026-09-26T07:04:20Z",
-    "event": "routine",
-    "dry_run": false,
-    "recovery": false,
-    "url": null,
-    "issues": []
-  },
+  "run": null,
   "last_run": {
-    "number": 13,
+    "number": 14,
     "outcome": "success",
     "mode": "test",
-    "started_at": "2026-09-26T06:05:14Z",
-    "ended_at": "2026-09-26T06:07:23Z",
-    "phase": "implement",
-    "summary": "Implement: preset list UI wired to Home screen (T-012b)",
+    "started_at": "2026-09-26T07:04:20Z",
+    "ended_at": "2026-09-26T07:06:35Z",
+    "phase": "test",
+    "summary": "Implement: README finalized (T-013), all impl tasks done, moved to test",
     "url": null,
     "notes": []
   },
   "stats": {
-    "total_runs": 13,
-    "successful_runs": 13,
+    "total_runs": 14,
+    "successful_runs": 14,
     "failed_runs": 0,
     "skipped_runs": 0,
     "consecutive_failures": 0
   },
   "halted": false,
   "halt_reason": null,
-  "updated_at": "2026-09-26T06:07:23Z"
+  "updated_at": "2026-09-26T07:06:35Z"
 }

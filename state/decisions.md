@@ -121,3 +121,9 @@
 - 결정: 착수 전에 T-012a(새 타이머 모달 + 타이머 리스트/TimerCard — mission.md §5 핵심 시나리오에 필수)와 T-012b(프리셋 리스트 UI — 있으면 좋지만 핵심 시나리오에는 필수 아님)로 분리. 이번 실행은 T-012a 만 수행.
 - 근거: CLAUDE.md §3.1 예산 원칙 및 Critic 지적을 그대로 따름. 프리셋은 mission.md §5 성공 기준(핵심 시나리오 1개)에 포함되지 않아 먼저 미뤄도 안전함.
 - 되돌릴 조건: 해당 없음
+
+## D-015 — 2026-09-26 — Run #14 — implement → test 전이
+- 맥락: T-013(README 최종 정리)을 끝으로 docs/design/mvp.md §6 이 등록한 구현 작업(T-007~T-013)이 모두 완료됨. backlog 의 phase:"implement" 작업이 더 이상 없음.
+- 결정: CLAUDE.md §3 전이 규칙("implement: backlog 에 phase:'implement' 작업이 남아 있으면 계속 implement, 없으면 → test")에 따라 `phase`: implement → **test** 전이. backlog 에 test phase 작업 2개 등록: (1) T-014 자동화 테스트 전체 재실행+결과 기록(에이전트가 끝까지 할 수 있음), (2) T-015 [사람 hand-off] 실기기 수동 시나리오 검증 요청 — 이 앱의 핵심 가치(백그라운드/종료 상태 알림)를 사람이 실제 아이폰에서 확인해야 하므로 T-008 과 같은 blocked+inbox 회신 패턴을 재사용.
+- 근거: mission.md §5 성공 기준("핵심 사용자 시나리오 1개가 Expo Go 로 실행한 아이폰에서 끝까지 동작")은 실기기 확인을 요구하고, 에이전트는 아이폰이 없어 직접 수행할 수 없음. D-011 에서 미뤄둔 검증을 여기서 다시 요청하는 것이며, D-007 의 pivot 조건이 그대로 적용됨(실패 시 explore cycle+1 재검토).
+- 되돌릴 조건: T-015 사람 회신이 "실패"면 explore(cycle+1)로 pivot 재검토. "성공"이면 test phase 완료 조건(테스트 전부 통과) 충족 후 review phase 로 전이.
