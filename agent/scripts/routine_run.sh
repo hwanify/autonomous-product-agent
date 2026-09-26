@@ -34,6 +34,18 @@ ensure_git_identity() {
 }
 
 cmd_start() {
+  # Hard technical guard against looping within one long-lived Routine session: at most one
+  # task attempt begins per UTC hour in this container, no matter what the model does or how
+  # many times it calls `start`. This does not depend on the model obeying "one task, then
+  # stop" — it is enforced here regardless.
+  local cur_hour lock_file
+  cur_hour=$(date -u +%Y%m%d%H)
+  lock_file="$TMP/last_run_hour"
+  if [ -f "$lock_file" ] && [ "$(cat "$lock_file")" = "$cur_hour" ]; then
+    echo "SKIP: a task attempt already started in this container during UTC hour $cur_hour; refusing to start another (loop guard)."
+    exit 3
+  fi
+
   ensure_git_identity
   git fetch -q origin "$DEFAULT_BRANCH"
   # Branch choice comes from the human-owned config on the default branch.
@@ -66,6 +78,10 @@ print('$DEFAULT_BRANCH' if c.get('commit_target')=='default_branch' else c.get('
     echo "SKIP: $(sed -n '/^skip_reason<</{n;p}' "$TMP/out")"
     exit 3
   fi
+
+  # Lock the hour now: this is the point of no return for this container this hour, whether
+  # the task below succeeds, fails, or the session gets interrupted mid-way.
+  echo "$cur_hour" > "$lock_file"
 
   # Checkpoint: if this session dies, the next run sees the unfinished run marker (RECOVERY).
   local n
