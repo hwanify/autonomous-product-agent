@@ -101,3 +101,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: `@react-native-async-storage/async-storage` 를 `npm install` 로 받으니 npm "latest" 태그(3.1.1)가 잡혔는데, `product/node_modules/expo/bundledNativeModules.json` 을 확인해보니 SDK 57 이 기대하는 버전은 2.2.0 임을 발견 — 정확한 버전(2.2.0)으로 재설치함(D-013, 향후 패키지 추가 시 재사용할 절차로 기록). `lib/presets.ts` 에 순수 함수(`addPreset`, `removePreset`)와 AsyncStorage I/O 함수(`loadPresets`, `savePresets`)를 분리해서 작성 — 저장된 값이 없거나 JSON 이 손상되거나 배열이 아닌 경우 모두 빈 배열을 안전하게 반환. `lib/__tests__/presets.test.ts` 에서 AsyncStorage 를 모킹해 7개 테스트 작성 — 전부 통과. `npx tsc --noEmit` 통과, 전체 테스트 35개(timer 21 + notifications 7 + presets 7) 통과.
 - 산출물: product/lib/presets.ts, product/lib/__tests__/presets.test.ts, product/package.json, product/README.md
 - 다음 할 일: T-012 — 홈 화면 UI(타이머 리스트, 새 타이머 모달, 프리셋 리스트) — lib 모듈 연결. Critic 이 크기 지적을 했으니 착수 전 더 쪼갤지 검토할 것.
+
+## Run #12 — 2026-09-26 05:04 UTC — phase: implement
+- 작업: T-012a 홈 화면(새 타이머 모달 + 타이머 리스트) — lib/timer.ts, lib/notifications.ts 연결
+- 결과: done
+- 한 일: Critic 이 이미 지적했던 T-012 크기 문제(D-009)를 반영해 착수 전 T-012a(핵심 화면)/T-012b(프리셋 UI)로 분리(D-014). `components/TimerCard.tsx`(라벨+남은시간(mm:ss)+일시정지/재개/취소), `components/NewTimerModal.tsx`(라벨+분/초 입력 폼), `screens/Home.tsx`(타이머 리스트 상태 관리, 1초마다 tickAll 로 갱신, 생성/일시정지/재개/취소 시 lib/notifications.ts 로 알림 예약/취소 동기화 — 일시정지 시 예약된 알림을 취소하고 재개 시 남은 시간 기준으로 다시 예약해서 알림 시각이 항상 정확하게 유지되도록 설계)를 작성. `App.tsx` 를 기존 알림 검증 데모 화면 대신 `Home` 화면을 렌더링하도록 교체 — 실제 타이머 생성 자체가 알림을 예약하므로 `test` phase 실기기 검증을 이 화면으로 대신할 수 있음. `npx tsc --noEmit` 통과, 기존 테스트 35개 전부 유지(회귀 없음, lib/*.ts 로직은 변경 안 함).
+- 산출물: product/screens/Home.tsx, product/components/TimerCard.tsx, product/components/NewTimerModal.tsx, product/App.tsx(교체), product/README.md
+- 다음 할 일: T-012b — 프리셋 리스트 UI(lib/presets.ts 연결) 또는 T-013(README 최종 정리)
