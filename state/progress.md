@@ -122,3 +122,11 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: 최종 sanity check(`npx tsc --noEmit`, `npm test` 35개 통과) 확인 후 README 를 전면 재작성 — 사용법(타이머 생성/일시정지/재개/취소/프리셋), 테스트 현황(35개, 모듈별 분해), 파일 구조 트리, "알려진 한계"(실기기 알림 미검증, D-011 참조), 패키지 추가 시 참고사항(D-013 절차)까지 한 문서에 정리. docs/design/mvp.md §6 이 등록한 구현 작업(T-007~T-013) 전부 완료 확인 → backlog 에 phase:"implement" 작업 없음 → CLAUDE.md §3 전이 규칙에 따라 phase `implement` → `test` 전이(D-015). test phase 완료 조건("테스트 전부 통과", 산출물 docs/reviews/test-<n>.md)에 맞춰 backlog 에 T-014(자동화 테스트 재확인)와 T-015(사람 실기기 검증 hand-off, T-008 과 같은 blocked+inbox 패턴 재사용)를 등록.
 - 산출물: product/README.md(전면 재작성)
 - 다음 할 일: T-014 — 자동화 테스트 전체 재실행 + docs/reviews/test-1.md 작성. 그 다음 T-015(사람에게 실기기 검증 요청, blocked 전환).
+
+## Run #15 — 2026-09-26 08:03 UTC — phase: test
+- 작업: T-014 자동화 테스트 전체 재실행 + docs/reviews/test-1.md 작성
+- 결과: done
+- 한 일: `npm test`(35개 전부 통과) + `npx tsc --noEmit`(에러 없음) 재확인. `npx expo lint` 는 여전히 네트워크 정책으로 미실행(D-012, 기존 기록 참고, mission.md/CLAUDE.md 완료 조건이 lint 를 명시적으로 요구하지 않아 이번 판정에서 제외, review phase 개선 후보로 남김). `docs/reviews/test-1.md` 에 자동화 테스트 결과 표와, 에이전트가 확인할 수 없는 수동 시나리오 4가지(백그라운드/종료 상태 알림[핵심], 다중 타이머, 일시정지/재개, 프리셋 영속성)를 명시하고, "테스트 전부 통과"를 성급히 확정하지 않는다는 판단을 기록.
+- 결정: phase 는 `test` 유지(전이하지 않음) — 핵심 수동 시나리오(특히 알림 신뢰성)가 아직 미검증이라 완료 조건을 충족하지 못했다고 판단. test phase 는 Critic 게이트 대상이 아니므로(§1 Step 3.5, explore/design/review 만 해당) Critic 호출 없이 이 판단을 내림.
+- 산출물: docs/reviews/test-1.md
+- 다음 할 일: T-015 — 사람에게 실기기(Expo Go) 수동 검증 요청, current_task blocked 전환, state/inbox.md 회신 대기.
