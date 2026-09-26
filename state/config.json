@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "mode": "test",
-  "paused": false,
+  "paused": true,
   "schedule_enabled": false,
   "commit_target": "work_branch",
   "work_branch": "agent/work",
