@@ -79,7 +79,7 @@ class ValidationTests(unittest.TestCase):
 
     def test_bad_task_status_rejected(self):
         state = common.load_json(REPO / "state" / "state.json")
-        state["current_task"] = {"id": "T-1", "title": "x", "phase": "discover", "status": "weird"}
+        state["current_task"] = {"id": "T-1", "title": "x", "phase": "explore", "status": "weird"}
         self.assertTrue(common.validate_state(state))
 
 
@@ -102,9 +102,9 @@ class FlowTests(unittest.TestCase):
 
         # simulate the agent finishing a task
         s = self.repo.state()
-        s["current_task"] = {"id": "T-001", "title": "ideas", "phase": "discover", "status": "done"}
-        s["phase"] = "research"
-        s["run_summary"] = "Generated 7 idea candidates"
+        s["current_task"] = {"id": "T-001", "title": "ideas", "phase": "explore", "status": "done"}
+        s["phase"] = "design"
+        s["run_summary"] = "Explore: selected an idea, Critic PASS, move to design"
         s["handled_issues"] = [{"number": 3, "reply": "ok"}]
         common.save_json(self.repo.dir / "state" / "state.json", s)
 
@@ -119,7 +119,7 @@ class FlowTests(unittest.TestCase):
         self.assertEqual(s["completed_tasks"][0]["id"], "T-001")
         self.assertEqual(s["handled_issues"], [])
         self.assertEqual(json.loads(replies.read_text())[0]["number"], 3)
-        self.assertIn("run #1, research", msg.read_text())
+        self.assertIn("run #1, design", msg.read_text())
         self.assertTrue((self.repo.dir / "state" / "STATUS.md").exists())
         self.assertEqual(len((self.repo.dir / "state" / "runs.jsonl").read_text().splitlines()), 1)
         self.assertEqual(common.validate_state(s), [])
@@ -130,7 +130,7 @@ class FlowTests(unittest.TestCase):
             self.assertEqual(self.repo.outputs()["skip"], "false", r.stdout)
             if n == 1:
                 s = self.repo.state()
-                s["current_task"] = {"id": "T-001", "title": "ideas", "phase": "discover",
+                s["current_task"] = {"id": "T-001", "title": "ideas", "phase": "explore",
                                      "status": "in_progress", "notes": "3 of 7 ideas written"}
                 common.save_json(self.repo.dir / "state" / "state.json", s)
             else:
