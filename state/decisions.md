@@ -33,3 +33,11 @@
 - 변경: `state.json` 의 phase를 `research`→`explore`, backlog(T-002~T-004)와 completed_tasks(T-001)의 phase 필드를 `explore`로 갱신. CLAUDE.md §2.1 에 통합 루프 세부 규칙 추가됨(§1 Step 3.5 Critic 게이트 대상도 `explore`/`design`/`review`로 변경).
 - 부가 사항: run #2는 사람이 persistent-session 루프 버그(같은 턴에서 두 번째 작업을 시작하는 문제, PR #7에서 하드 가드로 수정됨)를 테스트하던 중 강제로 interrupt 되어 실제 작업 없이 종료됨. stats를 정직하게 반영(total_runs 2, failed_runs 1, consecutive_failures 1)하고 last_run을 "crashed"로 기록.
 - 되돌릴 조건: 없음 (하네스 구조 변경, 제품 방향과 무관)
+
+## D-003 — 2026-09-26 — Run #2 — "crashed" 기록 정정 (실제로는 완료됨), origin push 충돌 해결
+- 맥락: D-002는 run #2가 interrupt 후 "실제 작업 없이 종료"됐다고 기록했으나, 이는 인터럽트 발생 시점(00:42Z)의 스냅샷이었음. 실제로는 사람이 "이어서" 라고 지시해 같은 run #2 세션이 재개되었고, T-002(multi-timer 경쟁 제품 조사, docs/research/multi-timer.md)를 실제로 완료함(종료 00:49Z). 이 사실이 반영되기 전에 origin/agent/work에 D-002 커밋(harness 마이그레이션 + "crashed" 기록)이 먼저 push되어, 로컬의 완료 커밋을 push할 때 state/state.json에서 충돌 발생.
+- 선택지: (A) maintainer의 "crashed" 기록을 그대로 수용하고 완료된 조사 결과물은 참고자료로만 남긴 채 T-002를 미완료로 되돌림 (B) 실제로 완료된 사실대로 정정 — run #2 outcome을 success로, T-002를 완료 처리, stats를 정직하게 재계산
+- 결정: (B). 사람에게 직접 확인한 결과("실제 완료로 정정") 이 방향으로 진행. `state.json`: phase는 새 `explore` 체계를 그대로 채택하되, last_run.outcome="success"(phase="explore", 실제 완료 요약 + 인터럽트/재개 경위를 notes에 기록), stats.successful_runs=2/failed_runs=0/consecutive_failures=0, completed_tasks에 T-002(phase: explore로 표기 통일)를 유지, backlog는 T-003·T-004만 남김(explore 체계의 새 문구 채택).
+- 근거: "crashed" 판정은 인터럽트 시점의 불완전한 스냅샷이었고, 이후 실제로 산출물(docs/research/multi-timer.md)이 존재하며 근거(WebSearch 출처)를 갖춘 완료된 작업임. 사실과 다른 기록을 남기는 것이 오히려 상태 파일의 신뢰성을 해침.
+- 되돌릴 조건: docs/research/multi-timer.md 의 내용이 실제로는 부실하거나 근거가 없다고 재검토에서 밝혀지면, T-002를 explore 단계에서 재점수·판정 시 다시 열어 보완
+- Critic 게이트 해당 없음 (아이디어 선정/기각·설계 확정·심각도 판정이 아니라 실행 이력 정정)
