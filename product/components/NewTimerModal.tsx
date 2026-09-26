@@ -1,27 +1,29 @@
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onCreate: (label: string, durationSeconds: number) => void;
+  onCreate: (label: string, durationSeconds: number, saveAsPreset: boolean) => void;
 }
 
 export default function NewTimerModal({ visible, onClose, onCreate }: Props) {
   const [label, setLabel] = useState('');
   const [minutes, setMinutes] = useState('');
   const [seconds, setSeconds] = useState('');
+  const [saveAsPreset, setSaveAsPreset] = useState(false);
 
   function reset() {
     setLabel('');
     setMinutes('');
     setSeconds('');
+    setSaveAsPreset(false);
   }
 
   function handleStart() {
     const totalSeconds = (parseInt(minutes, 10) || 0) * 60 + (parseInt(seconds, 10) || 0);
     if (!label.trim() || totalSeconds <= 0) return;
-    onCreate(label.trim(), totalSeconds);
+    onCreate(label.trim(), totalSeconds, saveAsPreset);
     reset();
     onClose();
   }
@@ -59,6 +61,10 @@ export default function NewTimerModal({ visible, onClose, onCreate }: Props) {
               onChangeText={setSeconds}
             />
             <Text style={styles.timeSeparator}>초</Text>
+          </View>
+          <View style={styles.presetRow}>
+            <Text style={styles.presetLabel}>프리셋으로 저장</Text>
+            <Switch value={saveAsPreset} onValueChange={setSaveAsPreset} />
           </View>
           <View style={styles.buttonRow}>
             <Pressable style={[styles.button, styles.cancelButton]} onPress={handleClose}>
@@ -109,6 +115,16 @@ const styles = StyleSheet.create({
   timeSeparator: {
     fontSize: 16,
     color: '#555',
+  },
+  presetRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  presetLabel: {
+    fontSize: 15,
+    color: '#333',
   },
   buttonRow: {
     flexDirection: 'row',

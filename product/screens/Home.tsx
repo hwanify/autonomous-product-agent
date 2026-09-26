@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import TimerCard from '../components/TimerCard';
 import NewTimerModal from '../components/NewTimerModal';
+import PresetList from '../components/PresetList';
 import {
   addTimer,
   createTimer,
@@ -18,6 +19,13 @@ import {
   ensureNotificationPermission,
   scheduleTimerNotification,
 } from '../lib/notifications';
+import {
+  addPreset,
+  loadPresets,
+  removePreset,
+  savePresets,
+  type TimerPreset,
+} from '../lib/presets';
 
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -25,6 +33,7 @@ function generateId(): string {
 
 export default function Home() {
   const [timers, setTimers] = useState<CookTimer[]>([]);
+  const [presets, setPresets] = useState<TimerPreset[]>([]);
   const [now, setNow] = useState(Date.now());
   const [modalVisible, setModalVisible] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
@@ -35,6 +44,7 @@ export default function Home() {
   useEffect(() => {
     configureNotificationHandler();
     ensureNotificationPermission().then(setPermissionGranted);
+    loadPresets().then(setPresets);
   }, []);
 
   useEffect(() => {
@@ -46,7 +56,7 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  async function handleCreate(label: string, durationSeconds: number) {
+  async function startTimer(label: string, durationSeconds: number) {
     if (!permissionGranted) {
       Alert.alert('알림 권한이 없습니다', '설정에서 알림 권한을 허용해주세요.');
       return;
@@ -56,6 +66,26 @@ export default function Home() {
     setTimers((list) => addTimer(list, timer));
     const notificationId = await scheduleTimerNotification(label, durationSeconds);
     notificationIdsRef.current[id] = notificationId;
+  }
+
+  async function handleCreate(label: string, durationSeconds: number, saveAsPreset: boolean) {
+    await startTimer(label, durationSeconds);
+    if (saveAsPreset) {
+      const preset: TimerPreset = { id: generateId(), label, durationSeconds };
+      const next = addPreset(presets, preset);
+      setPresets(next);
+      await savePresets(next);
+    }
+  }
+
+  async function handleStartPreset(preset: TimerPreset) {
+    await startTimer(preset.label, preset.durationSeconds);
+  }
+
+  async function handleDeletePreset(id: string) {
+    const next = removePreset(presets, id);
+    setPresets(next);
+    await savePresets(next);
   }
 
   async function handlePause(id: string) {
@@ -88,6 +118,7 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>요리용 멀티 타이머</Text>
+      <PresetList presets={presets} onStart={handleStartPreset} onDelete={handleDeletePreset} />
       {timers.length === 0 ? (
         <Text style={styles.empty}>아직 실행 중인 타이머가 없습니다.</Text>
       ) : (

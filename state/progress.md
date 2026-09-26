@@ -108,3 +108,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: Critic 이 이미 지적했던 T-012 크기 문제(D-009)를 반영해 착수 전 T-012a(핵심 화면)/T-012b(프리셋 UI)로 분리(D-014). `components/TimerCard.tsx`(라벨+남은시간(mm:ss)+일시정지/재개/취소), `components/NewTimerModal.tsx`(라벨+분/초 입력 폼), `screens/Home.tsx`(타이머 리스트 상태 관리, 1초마다 tickAll 로 갱신, 생성/일시정지/재개/취소 시 lib/notifications.ts 로 알림 예약/취소 동기화 — 일시정지 시 예약된 알림을 취소하고 재개 시 남은 시간 기준으로 다시 예약해서 알림 시각이 항상 정확하게 유지되도록 설계)를 작성. `App.tsx` 를 기존 알림 검증 데모 화면 대신 `Home` 화면을 렌더링하도록 교체 — 실제 타이머 생성 자체가 알림을 예약하므로 `test` phase 실기기 검증을 이 화면으로 대신할 수 있음. `npx tsc --noEmit` 통과, 기존 테스트 35개 전부 유지(회귀 없음, lib/*.ts 로직은 변경 안 함).
 - 산출물: product/screens/Home.tsx, product/components/TimerCard.tsx, product/components/NewTimerModal.tsx, product/App.tsx(교체), product/README.md
 - 다음 할 일: T-012b — 프리셋 리스트 UI(lib/presets.ts 연결) 또는 T-013(README 최종 정리)
+
+## Run #13 — 2026-09-26 06:05 UTC — phase: implement
+- 작업: T-012b 프리셋 리스트 UI(lib/presets.ts 연결) — 저장된 프리셋 바로 시작 + 새 타이머 생성 시 프리셋으로 저장
+- 결과: done
+- 한 일: `NewTimerModal.tsx` 에 "프리셋으로 저장" 스위치 추가(onCreate 시그니처에 `saveAsPreset` 인자 추가). `components/PresetList.tsx` 신규 작성 — 저장된 프리셋을 가로 스크롤 칩으로 보여주고 탭하면 즉시 시작, ×로 삭제. `screens/Home.tsx` 에서 타이머 시작 로직을 `startTimer` 공통 함수로 뽑아내 "새로 만들기"와 "프리셋으로 시작"이 같은 경로(생성+알림 예약)를 타도록 함. 마운트 시 `loadPresets()` 로 AsyncStorage 에서 프리셋을 불러오고, 저장/삭제 시 `savePresets()` 로 즉시 반영. `npx tsc --noEmit` 통과, 기존 테스트 35개 전부 유지(lib/*.ts 로직은 변경 안 함, UI 배선만 추가).
+- 산출물: product/components/PresetList.tsx, product/components/NewTimerModal.tsx(수정), product/screens/Home.tsx(수정), product/README.md
+- 다음 할 일: T-013 — product/README.md 최종 정리(npx expo start 실행법 재확인, Expo Go 로 여는 방법). 이걸로 design phase 가 등록한 구현 작업(T-007~T-013)이 모두 끝나 phase 전이를 검토해야 함(→ test).
