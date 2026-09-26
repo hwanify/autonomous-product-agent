@@ -57,3 +57,18 @@
 - 결정: 결론을 확정하지 않는다. `current_task`(T-005)를 `in_progress` 로 유지하고, 위 (a)(b) 두 가지를 다음 실행에서 보완한 뒤 Step 3.5 Critic 게이트를 다시 통과해야 done 처리한다.
 - 근거: CLAUDE.md §1 Step 3.5 처리 규칙("REWORK → in_progress 유지, notes 에 구체적 결함 기록, 다음 실행에서 보완") 그대로 따름. Critic 의견에 반박할 새 근거가 없으므로 그대로 수용.
 - 되돌릴 조건: 다음 실행에서 (a)(b) 보완 후 재상정, 새 Critic PASS/REJECT 로 확정
+
+## D-006 — 2026-09-26 — Run #5 — multi-timer 2차 보완 → Critic 2차 REWORK
+- 맥락: Run #5 에서 D-005 의 (a)(b) 를 WebSearch로 실제 조사(MultiTimer Help Center 트러블슈팅 문서 확인, 계란 타이머류 6개+ 확인)하고 docs/validation/multi-timer.md 를 "기각(17점)"으로 갱신, 두 번째 Critic 게이트 호출.
+- Critic 게이트: 2차 **REWORK**.
+  - 핵심 코멘트(원문 인용): "research.md의 원래 Gap은 'Multi Kitchen & Cooking Timer'가... 그런데 Run #5는 이 앱이 아니라 다른 앱(MultiTimer)의 알림 신뢰성만 조사하고, 그 결과를... 원래 Gap에 그대로 전이시켰다", "iOS 시간 기반 로컬 예약 알림은... OS가 직접 발화한다... 이를 구분하지 않고 '우리도 동일하게 실패한다'고 단정했다. 이는 반대 방향의 근거 없는 비관이다", "재점수(비평가 관점): ...19점...기각 결론이 확정적이지 않다".
+- 결정: 결론을 확정하지 않는다. 지적된 기술적 오류(엉뚱한 경쟁자 근거 전이, OS 제약 과잉일반화)를 인정하고, 같은 실행(Run #5) 안에서 곧바로 3차 보완(로컬 알림의 실제 OS 레벨 동작 방식 재조사) 후 3차 제출.
+- 근거: turn 예산(90, 아직 여유 있음)이 있고 Critic 지적이 구체적이라 즉시 보완 가능 판단.
+
+## D-007 — 2026-09-26 — Run #5 — multi-timer 선정 (기각→선정으로 정정), Critic PASS, explore→design 전이
+- 맥락: D-006 의 기술적 오류를 정정 — expo-notifications 의 시간 기반 로컬 예약 알림은 OS(UNUserNotificationCenter)가 앱 종료 상태에서도 발화하도록 설계된 일반적 iOS 동작이며, 앞서 조사한 expo-notifications 관련 이슈들은 "알림 표시"가 아니라 "탭 이후 JS 콜백 실행"에 관한 별개 문제였음을 확인. 이를 반영해 docs/validation/multi-timer.md 를 재점수(Pain4/Gap3/Feasibility5/Demonstrability5/Differentiation3=20점)하고 **선정(SELECT)**으로 결론을 뒤집음. 핵심 차별점("확실한 알림")을 가설로 명시하고, design 단계 첫 구현 작업으로 실기기 검증 + 실패 시 즉시 pivot 을 조건으로 검.
+- Critic 게이트: 3차 **PASS**.
+  - 핵심 코멘트(원문 인용): "Expo Go 특유 제약과 'iOS 일반론'의 혼동... 핵심 기술 주장은 '네이티브 iOS 일반론'이지 'Expo Go 환경'에 대한 검증된 지식이 아니다"(design 진입 시 반드시 실제 Expo Go 환경에서 검증 필요, 네이티브 iOS 일반론과 구분할 것), "가장 강력한 실제 증거를 스스로 폐기... 원인이 불명확해도 증상(경쟁앱의 실관찰 실패)은 여전히 수요 신호로 쓸 수 있었다"(Multi Kitchen & Cooking Timer 의 무음 버그 자체는 여전히 유효한 수요 신호로 참고할 것), "차별점이 사실상 단일 축... 6개 이상의 경쟁앱이 존재하는 붐비는 시장에서 단일 미검증 가설 하나로 충분한지는 문서도 답하지 못한다"(리스크로 계속 인지할 것). 최종 판정: "design 첫 구현 작업으로 실기기 검증 + 실패 시 즉시 pivot을 조건으로 건 것은... 합리적인 리스크 우선 설계다."
+- 결정: **multi-timer(요리용 멀티 타이머)를 선정**한다. `phase`: explore → **design** 전이. `product.name`="요리용 멀티 타이머", `product.status`="selected". backlog 의 남은 explore 후보(T-004, split-bill)는 이미 후보 선정이 끝났으므로 제거(폐기가 아니라 보류 — 이번 제품이 review 단계에서 pivot 판정을 받으면 재고려 가능).
+- 근거: mission.md §4 기준 재점수 20점(통과) + Critic PASS. Critic 이 지적한 리스크 2가지(Expo Go 환경 검증 필요, 시장 포화도)는 design/implement 단계 첫 작업에 명시적으로 반영.
+- 되돌릴 조건: design 첫 구현 작업(실기기 알림 검증)이 실패하면 즉시 이 선정을 재검토(pivot, explore cycle+1)

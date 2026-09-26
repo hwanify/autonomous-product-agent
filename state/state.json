@@ -1,35 +1,28 @@
 {
   "schema_version": 1,
-  "phase": "explore",
+  "phase": "design",
   "cycle": 1,
   "product": {
-    "name": null,
-    "one_liner": null,
-    "status": "none"
+    "name": "요리용 멀티 타이머",
+    "one_liner": "여러 요리를 동시에 할 때 라벨 붙여 여러 타이머를 돌리고, 앱이 꺼져 있어도 확실하게 알림이 울리는 무료 Expo 앱",
+    "status": "selected"
   },
-  "current_task": {
-    "id": "T-005",
-    "title": "multi-timer(요리용 멀티 타이머) 기존 조사(docs/research/multi-timer.md) 근거로 재점수·판정",
-    "phase": "explore",
-    "status": "in_progress",
-    "started_run": 4,
-    "notes": "docs/validation/multi-timer.md 초안(기각 제안, 재점수 18점) 작성 완료했으나 Critic REWORK. 다음 실행에서 보완할 것: (a) 'MultiTimer notification not working/missed' 등으로 타겟 WebSearch 1회 해서 최강 경쟁자(MultiTimer)의 알림 신뢰성 실제 근거 확인, (b) '조리 프리셋 라이브러리(예: 라면/계란 등 미리 정의된 타이머)' 로 스코프를 좁혀 Gap/Differentiation 재점수 시도. 이 두 가지를 반영해 docs/validation/multi-timer.md 를 갱신한 뒤 Critic 게이트를 다시 통과시켜야 done."
-  },
+  "current_task": null,
   "backlog": [
     {
-      "id": "T-005",
-      "title": "multi-timer(요리용 멀티 타이머) 기존 조사(docs/research/multi-timer.md) 근거로 재점수·판정",
-      "phase": "explore",
+      "id": "T-006",
+      "title": "docs/design/mvp.md 작성: MVP 범위(필수/제외 기능), 사용자 시나리오, 화면 흐름, 기술 구조, 테스트 계획, 구현 작업(T-번호) 분해. 반드시 첫 구현 작업으로 'Expo Go 실기기에서 앱 종료/백그라운드 상태에서도 예약 로컬 알림이 소리+배너로 울리는지' 검증을 포함할 것(D-007 조건부 선정 근거, 실패 시 즉시 explore로 pivot)",
+      "phase": "design",
       "priority": 1
-    },
-    {
-      "id": "T-004",
-      "title": "split-bill(더치페이 정산기) 경쟁 제품 조사 → 재점수·판정까지 한 실행에서 진행",
-      "phase": "explore",
-      "priority": 2
     }
   ],
   "completed_tasks": [
+    {
+      "id": "T-005",
+      "title": "multi-timer(요리용 멀티 타이머) 재점수·판정 (선정, Critic PASS 3차)",
+      "phase": "explore",
+      "run": 5
+    },
     {
       "id": "T-003",
       "title": "interval-timer(커스텀 인터벌 운동 타이머) 경쟁 제품 조사 → 재점수·판정 (기각, Critic PASS)",
@@ -51,36 +44,26 @@
   ],
   "run_summary": "",
   "handled_issues": [],
-  "run": {
-    "number": 5,
-    "mode": "test",
-    "status": "running",
-    "started_at": "2026-09-26T02:03:42Z",
-    "event": "routine",
-    "dry_run": false,
-    "recovery": true,
-    "url": null,
-    "issues": []
-  },
+  "run": null,
   "last_run": {
-    "number": 4,
+    "number": 5,
     "outcome": "success",
     "mode": "test",
-    "started_at": "2026-09-26T01:03:48Z",
-    "ended_at": "2026-09-26T01:08:04Z",
-    "phase": "explore",
-    "summary": "Explore: multi-timer rescore drafted, Critic REWORK (needs 2 more checks)",
+    "started_at": "2026-09-26T02:03:42Z",
+    "ended_at": "2026-09-26T02:11:23Z",
+    "phase": "design",
+    "summary": "Explore: multi-timer selected after 3 Critic rounds, moved to design",
     "url": null,
     "notes": []
   },
   "stats": {
-    "total_runs": 4,
-    "successful_runs": 4,
+    "total_runs": 5,
+    "successful_runs": 5,
     "failed_runs": 0,
     "skipped_runs": 0,
     "consecutive_failures": 0
   },
   "halted": false,
   "halt_reason": null,
-  "updated_at": "2026-09-26T01:08:04Z"
+  "updated_at": "2026-09-26T02:11:23Z"
 }

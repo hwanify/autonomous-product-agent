@@ -29,6 +29,11 @@
 - "Multi Timer: Kitchen Timer" 는 상세 조사가 부족함.
 - 한국 앱스토어/네이버 등 국내 사용자 불만은 조사하지 않음 (영어권 App Store 리뷰 위주) — validate 단계에서 필요시 보강.
 
+## Run #5 추가 타겟 조사 (Critic 요구사항 반영)
+
+- **MultiTimer 알림 신뢰성**: [Help Center](https://help.multitimer.net/troubleshooting-for-ios)에 iOS/Android 전용 트러블슈팅 문서가 있을 정도로 실제로 알림 실패 이슈가 있음("다른 앱으로 전환하거나 폰을 내려놓으면 알람이 안 울린다"). 원인은 iOS 백그라운드 실행 제약·무음/잠금 설정·배터리 최적화 — **앱 설계가 아니라 OS 플랫폼 제약**이라, 동일한 `expo-notifications` 기반인 우리 앱도 피할 수 없다.
+- **조리 프리셋 니치**: 계란 삶기만 검색해도 EggApp, Egg Timer – Smart Cook, EggTime, Boiled Egg Timer, Egg Timer Plus 등 6개 이상의 정교한 전용 앱이 이미 존재(크기·고도·냉장 여부까지 보정). 상세 근거는 docs/validation/multi-timer.md 참조.
+
 ## 왜 이 조사가 틀렸을 수 있는가
 - 검색 스니펫은 요약이라 실제 리뷰 개수·최신성(오래된 리뷰일 수 있음)을 알 수 없다.
 - "쓸모없다"는 평가가 있는 경쟁 앱이 실제로는 여전히 다운로드 순위가 높을 수 있어, 그 결함이 시장에서 치명적이지 않을 가능성도 있다.

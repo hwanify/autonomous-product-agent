@@ -48,3 +48,12 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: 기존 docs/research/multi-timer.md 를 재검토해 재점수(Pain4/Gap2/Feasibility5/Demonstrability5/Differentiation2=18점, 기준 통과)하고, Gap·Differentiation 부족을 근거로 docs/validation/multi-timer.md 에서 기각(REJECT) 제안. Step 3.5 Critic 게이트 호출 결과 **REWORK** — 부재 증거(경쟁자 MultiTimer 가 알림 문제 없다는 걸 실제로 확인 안 함)로 결론 내렸고, research.md 가 이미 발견한 "조리 프리셋 라이브러리" 대안 스코프를 저비용으로 재점수해볼 수 있었는데 시도하지 않았다는 지적. 프로토콜대로 결론을 확정하지 않고 current_task 를 in_progress 로 유지, notes 에 다음 실행이 보완할 두 가지(타겟 WebSearch, 조리 프리셋 스코프 재점수)를 기록.
 - 산출물: docs/validation/multi-timer.md (초안, 미확정)
 - 다음 할 일: T-005 보완 — (a) MultiTimer 알림 신뢰성 타겟 검색, (b) 조리 프리셋 스코프 재점수 → Critic 재통과 시도
+
+## Run #5 — 2026-09-26 02:03 UTC — phase: explore (RECOVERY) → design
+- 작업: T-005 multi-timer 재점수·판정 보완 (Critic REWORK 2회 → 최종 PASS)
+- 결과: done
+- 한 일: (1) MultiTimer Help Center 트러블슈팅 문서 확인, 계란 타이머류 6개+ 확인 → 재점수 17점(기각)으로 갱신했으나 Critic 2차 REWORK("엉뚱한 경쟁자에 근거 전이", "OS 제약 과잉일반화는 근거 없는 비관"). (2) 지적을 인정하고 iOS 로컬 예약 알림의 실제 OS 레벨 동작 방식을 재조사, expo-notifications 관련 이슈들이 "알림 표시"가 아니라 "탭 후 콜백 실행" 문제였음을 확인 → 재점수 20점(선정)으로 결론을 뒤집음. (3) Critic 3차 PASS — 단, "Expo Go 환경(네이티브 아님)에서 실제 검증 필요", "경쟁앱 무음 버그 자체는 여전히 유효한 수요 신호", "차별점이 단일 축이라 리스크 있음" 세 가지를 design/implement 단계에 반영하라는 조건부.
+- Critic 판정 이력: REWORK(1차) → REWORK(2차) → **PASS(3차)**. 세 번의 코멘트 모두 state/decisions.md D-005~D-007 에 원문 인용으로 기록.
+- 결정: **multi-timer(요리용 멀티 타이머) 선정.** phase `explore` → `design` 전이. 남은 explore 후보(T-004, split-bill)는 보류.
+- 산출물: docs/research/multi-timer.md(갱신), docs/validation/multi-timer.md(최종)
+- 다음 할 일: design 단계 — docs/design/mvp.md 작성. **반드시 첫 구현 작업으로 "Expo Go 실기기에서 앱 종료/백그라운드 상태에서도 예약 로컬 알림이 소리+배너로 울리는지" 검증을 포함할 것** (실패 시 즉시 pivot 조건부 선정이었음, D-007 참조).
