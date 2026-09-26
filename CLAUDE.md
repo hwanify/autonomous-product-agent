@@ -48,7 +48,7 @@
 
 ### Step 3.5 — Critic 게이트 (Builder/Critic 분리, 과대평가 방지)
 
-phase 가 `validate`, `design`, `review` 중 하나이고 이번 작업에서 **결론(선정/기각, 설계 확정, 심각도 판정)** 을 냈다면,
+phase 가 `explore`, `design`, `review` 중 하나이고 이번 작업에서 **결론(선정/기각, 설계 확정, 심각도 판정)** 을 냈다면,
 그 결론을 `current_task.status="done"` 으로 확정하기 전에 **Task 도구로 독립된 Critic subagent 를 1회 호출**한다
 (`subagent_type: "general-purpose"`). 너(Builder)의 이번 실행 대화나 추론 과정은 Critic 에게 주지 않는다.
 
@@ -87,14 +87,26 @@ Critic 에게 주는 것: `mission.md` 전체와, 이번에 만든 산출물 파
 
 | phase | 할 일 | 산출물 | 완료 조건 |
 |---|---|---|---|
-| `discover` | mission.md 범위에서 문제/아이디어 후보 5~10개 도출, 평가 기준으로 1차 점수화 | `docs/ideas/ideas-<cycle>.md` | 상위 1~3개 후보 선정 |
-| `research` | 상위 후보별 경쟁 제품 3~5개 조사 (WebSearch/WebFetch). 기능·가격·리뷰의 불만·빈틈 | `docs/research/<slug>.md` | 후보별 경쟁 분석 표 + 빈틈 요약 |
-| `validate` | 조사 근거로 점수 재평가, 반대 논거(왜 실패할까) 작성, 1개 선정 또는 전부 기각 | `docs/validation/<slug>.md` | 선정(→design) 또는 기각(→discover, cycle+1) 결정이 decisions.md 에 기록 |
+| `explore` | **발굴·조사·검증을 한 루프로 처리** (§2.1 참조): 아이디어 도출 → 상위 후보 빠른 경쟁 조사 → 조사 근거로 즉시 재점수·판정까지 같은 실행에서 최대한 진행 | `docs/ideas/ideas-<cycle>.md`, `docs/research/<slug>.md`, `docs/validation/<slug>.md` | 1개 선정(→design) 또는 모든 후보 기각(cycle+1, `explore` 유지) 결정이 decisions.md 에 기록 |
 | `design` | MVP 범위(필수/제외 기능), 사용자 시나리오, 화면 흐름, 기술 구조, 테스트 계획, 구현 작업 분해 | `docs/design/mvp.md` | 구현 작업들이 backlog 에 T-번호로 등록 |
 | `implement` | backlog 의 구현 작업 1개 구현 + 해당 테스트 작성 | `product/` | 작업 단위 코드+테스트 존재 |
 | `test` | 전체 테스트 실행, 실패 수정, 수동 시나리오 점검 결과 기록 | `product/` , `docs/reviews/test-<n>.md` | 테스트 전부 통과 |
 | `review` | **비판적** 검토: 사용성, 버그, 보안, 성능, 미션 적합성, 경쟁 대비 가치. 문제를 심각도(치명/높음/중간/낮음)로 분류 | `docs/reviews/review-<n>.md` | 개선 작업이 backlog 에 등록 |
 | `improve` | 리뷰에서 나온 가장 심각한 문제 1개 개선 | `product/` | 해당 문제 해결 + 테스트 |
+
+### 2.1 `explore` 단계 세부 규칙 (발굴+조사+검증 통합 루프)
+
+예전엔 discover→research→validate 를 서로 다른 phase(실행 3~4회)로 나눴지만, 이제 **phase 는 `explore` 하나**다.
+한 번의 실행 안에서 아래를 **turn 예산이 허락하는 만큼 이어서** 처리하고, 못 끝낸 부분은 `current_task.notes` 에 남겨 다음 실행이 잇는다.
+
+1. **후보가 아직 없으면 (`docs/ideas/ideas-<cycle>.md` 없음)**: mission.md 기준으로 아이디어 5~10개를 브레인스토밍하고 1차 점수화한다.
+   상위 1~3개를 이 실행에서 곧바로 아래 2번으로 넘어가 조사까지 시도한다 (턴이 부족하면 여기서 멈추고 다음 실행이 2번부터 시작).
+2. **상위 후보 하나를 골라 빠른 경쟁 조사**: WebSearch/WebFetch 로 경쟁 제품 3~5개, 기능·가격·리뷰의 불만/빈틈을 `docs/research/<slug>.md` 에 정리한다.
+   전체를 다 조사하지 않아도 된다 — 점수를 다시 매길 수 있을 만큼의 근거면 충분하다.
+3. **같은 실행에서 곧바로 재점수·판정**: 조사 근거로 평가 기준을 다시 매기고, "왜 실패할까" 반대 논거를 쓴 뒤 `docs/validation/<slug>.md` 에 선정/기각 결론을 낸다.
+   이 결론에는 §1 Step 3.5 Critic 게이트가 적용된다.
+4. 한 후보가 기각되면 다음 우선순위 후보로 2~3번을 반복한다(턴이 남는 한). 모든 후보가 기각되면 §3 규칙대로 `cycle+1` 하고 1번으로 되돌아간다.
+5. 하나가 선정되고 Critic 이 `PASS` 하면 `phase="design"` 으로 전이한다.
 
 ### 기술 원칙 (product/) — Expo (React Native)
 - `npx create-expo-app` 기반의 **managed workflow** 를 쓴다. `ios/`, `android/` 네이티브 디렉터리를 생성하는
@@ -109,23 +121,23 @@ Critic 에게 주는 것: `mission.md` 전체와, 이번에 만든 산출물 파
 ## 3. Phase 전이 규칙 (루프)
 
 ```
-discover → research → validate ─(선정, Critic PASS)→ design → implement ⟲ (구현 작업이 남아있는 동안)
-                          │                                       ↓
-                          └─(전부 기각)→ discover              test → review → improve → test → review …
-                                  (cycle+1)                             │
-                                                                        └─(제품 근본 문제: pivot)→ discover (cycle+1)
+explore(발굴+조사+검증, §2.1) ─(선정, Critic PASS)→ design → implement ⟲ (구현 작업이 남아있는 동안)
+        │                                                  ↓
+        └─(모든 후보 기각)→ explore(cycle+1)             test → review → improve → test → review …
+                                                                  │
+                                                                  └─(제품 근본 문제: pivot)→ explore (cycle+1)
 ```
 
-사람의 승인 없이 완전 자율로 진행한다: `validate` 에서 아이디어를 선정하고 Critic 이 `PASS` 를 주면 곧바로 `design` 으로 전이한다.
+사람의 승인 없이 완전 자율로 진행한다: `explore` 에서 아이디어를 선정하고 Critic 이 `PASS` 를 주면 곧바로 `design` 으로 전이한다.
 (사람이 방향을 바꾸고 싶으면 `mission.md` 수정, `state/inbox.md` 지시, 또는 `paused`/`reset_halt` 로 개입할 수 있다 — 이건 언제든 가능하지만 필수 관문은 아니다.)
 
 - implement: backlog 에 `phase:"implement"` 작업이 남아 있으면 계속 implement, 없으면 → test.
 - test: 실패 시 phase 유지(수정), 전부 통과 → review.
 - review: 치명/높음 문제가 있으면 → improve. 없고 성공 기준(mission.md §5)을 충족하면 `product.status="mvp_done"` 으로 두고 → improve (다음 개선 루프: 사용자 가치 증대).
 - improve: 개선 1건 완료 → test.
-- review 에서 "이 제품은 미션에 맞지 않는다"는 근거가 강하면 pivot: decisions.md 기록 후 discover(cycle+1).
+- review 에서 "이 제품은 미션에 맞지 않는다"는 근거가 강하면 pivot: decisions.md 기록 후 explore(cycle+1).
 - 전이 결정은 한 줄이라도 decisions.md 에 근거를 남긴다.
-- `validate`/`design`/`review` 의 결론은 위 §1 Step 3.5 Critic 게이트를 `PASS` 로 통과해야 phase 를 전이한다. `REWORK` 는 같은 phase 에 머문다.
+- `explore`/`design`/`review` 의 결론은 위 §1 Step 3.5 Critic 게이트를 `PASS` 로 통과해야 phase 를 전이한다. `REWORK` 는 같은 phase 에 머문다.
 
 ## 3.1 실행 빈도와 예산 (30분 간격 운영)
 - Routine 이 30분 간격으로 돈다는 전제 하에, 한 실행은 **turn 예산의 상당 부분**을 쓰지 않도록 작업을 잘게 쪼갠다.

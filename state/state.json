@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "phase": "discover",
+  "phase": "explore",
   "cycle": 1,
   "product": {
     "name": null,
@@ -11,8 +11,8 @@
   "backlog": [
     {
       "id": "T-001",
-      "title": "mission.md 기준으로 제품 아이디어 후보 5~10개 발굴 및 1차 점수화",
-      "phase": "discover",
+      "title": "mission.md 기준으로 아이디어 후보 도출 → 상위 후보 경쟁 조사 → 재점수·선정/기각까지 한 루프로 진행",
+      "phase": "explore",
       "priority": 1
     }
   ],
