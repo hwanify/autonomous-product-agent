@@ -25,15 +25,14 @@
         "Read", "Write", "Edit", "MultiEdit", "Glob", "Grep", "LS", "TodoWrite",
         "Task", "WebSearch", "WebFetch",
         "Bash(ls:*)", "Bash(cat:*)", "Bash(head:*)", "Bash(tail:*)", "Bash(wc:*)",
-        "Bash(mkdir:*)", "Bash(find:*)",
+        "Bash(mkdir:*)", "Bash(find:*)", "Bash(rm:*)", "Bash(mv:*)", "Bash(cp:*)",
         "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)",
-        "Bash(node:*)", "Bash(npm test:*)", "Bash(npm run test:*)",
+        "Bash(node:*)", "Bash(npm:*)", "Bash(npx:*)",
         "Bash(python3:*)"
       ],
       "disallowed_tools": [
         "Bash(git push:*)", "Bash(git commit:*)", "Bash(git reset:*)", "Bash(git checkout:*)",
-        "Bash(curl:*)", "Bash(wget:*)", "Bash(sudo:*)", "Bash(rm -rf:*)",
-        "Bash(npm install:*)", "Bash(npm i:*)", "Bash(pip install:*)", "Bash(pip3 install:*)"
+        "Bash(curl:*)", "Bash(wget:*)", "Bash(sudo:*)", "Bash(rm -rf /*)", "Bash(pip install:*)", "Bash(pip3 install:*)"
       ]
     },
     "live": {
