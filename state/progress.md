@@ -158,3 +158,11 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: 사람이 실기기에서 직접 테스트한 뒤 "정상적으로 알림은 오는데 앱을 껐다키면 ui는 사라져있어"라고 채팅으로 회신함. 이를 T-015 성공(핵심 가설 검증 완료)으로 판정 — mission.md §5 핵심 조건, D-007/D-009/D-011/D-015 가 반복적으로 조건부로 걸어뒀던 "백그라운드/종료 상태 알림"이 실제로 동작함이 확인됨. 같은 회신에 포함된 UI 미보존 문제(설계 문서가 이미 예견하고 review 단계 개선 후보로 남겨뒀던 항목)는 review 단계 검토 대상으로 확정. test phase 완료 조건(자동화 35개 통과 + 이번 핵심 수동 시나리오 성공)을 충족했다고 판단해 phase 를 `test`→`review` 전이(D-018). backlog 에 T-016(비판적 검토, docs/reviews/review-1.md, UI 미보존 이슈 포함) 등록. product/README.md 를 검증 완료 상태로 갱신(더 이상 "미검증" 문구 없음).
 - 산출물: product/README.md(갱신)
 - 다음 할 일: T-016 — review phase 비판적 검토 수행. 결론에는 Critic 게이트 적용 필요(§1 Step 3.5, review 는 대상 phase).
+
+## Run #20 — 2026-09-26 — phase: review → improve
+- 작업: T-016 review phase 비판적 검토, docs/reviews/review-1.md 작성
+- 결과: done
+- 한 일: 코드 전체(App.tsx, screens/Home.tsx, components/*, lib/*.ts)를 재검토. 1차본: 치명 0/높음 2건(H1: 앱 재시작 시 타이머 리스트 소실, H2: 그로 인한 잠재적 중복 알림), 중간 3건(입력 검증 피드백 없음, 프리셋 삭제 버튼 터치영역 겹침, 프리셋 중복 저장), 낮음 2건(1시간 초과 시간 표시, 설정 딥링크 부재). Critic 1차 REWORK — `Home.tsx` 가 마운트 시 1회만 알림 권한을 확인하고 `AppState` 리스너가 없어 나중에 설정에서 권한을 켜도 앱 재시작 전까지 타이머 생성이 완전히 막히는 별도의 높음급 버그(H3)를 코드로 지적. 이를 반영해 H3 추가, improve 우선순위를 H1/H2(범위 큼) 대신 H3(범위 작고 핵심 동작을 완전히 막음)로 변경 → Critic 2차 **PASS**. Critic 판정 이력과 원문 코멘트는 state/decisions.md D-019 에 기록.
+- 결정: review 결론 확정(치명 0/높음 3건/중간 3건/낮음 2건). phase `review`→`improve` 전이. backlog 에 T-017(H3 수정: AppState 리스너로 포그라운드 복귀 시 알림 권한 재확인) 등록. H1/H2 등 나머지는 다음 루프 후보로 review-1.md 에 기록.
+- 산출물: docs/reviews/review-1.md
+- 다음 할 일: T-017 — screens/Home.tsx 에 AppState 리스너 추가해서 앱이 포그라운드로 복귀할 때 알림 권한을 재확인하도록 수정 + 검증.

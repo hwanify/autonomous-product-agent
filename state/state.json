@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "phase": "review",
+  "phase": "improve",
   "cycle": 1,
   "product": {
     "name": "요리용 멀티 타이머",
@@ -10,13 +10,19 @@
   "current_task": null,
   "backlog": [
     {
-      "id": "T-016",
-      "title": "review phase: 비판적 검토(사용성/버그/보안/성능/미션 적합성/경쟁 대비 가치) 수행, 문제를 심각도(치명/높음/중간/낮음)로 분류해 docs/reviews/review-1.md 작성. 이미 확인된 후보 이슈: 앱을 완전히 재시작하면 타이머 리스트 UI가 사라짐(예약된 알림 자체는 정상 동작 — 사람이 실기기에서 직접 확인, Run #19). 결론에는 §1 Step 3.5 Critic 게이트 적용",
-      "phase": "review",
+      "id": "T-017",
+      "title": "H3 수정: screens/Home.tsx 에 AppState 리스너 추가 — 앱이 포그라운드로 복귀할 때 ensureNotificationPermission() 재호출해 permissionGranted 갱신. 검증: npx tsc --noEmit, npm test 회귀 확인",
+      "phase": "improve",
       "priority": 1
     }
   ],
   "completed_tasks": [
+    {
+      "id": "T-016",
+      "title": "review phase 비판적 검토 — 치명0/높음3(H1,H2,H3)/중간3/낮음2, docs/reviews/review-1.md (Critic PASS 2차)",
+      "phase": "review",
+      "run": 20
+    },
     {
       "id": "T-015",
       "title": "[사람 hand-off] 실기기 검증 성공 — 백그라운드/종료 상태 알림 정상 동작 확인 (핵심 가설 검증 완료)",
@@ -110,36 +116,26 @@
   ],
   "run_summary": "",
   "handled_issues": [],
-  "run": {
-    "number": 20,
-    "mode": "test",
-    "status": "running",
-    "started_at": "2026-09-26T10:04:11Z",
-    "event": "routine",
-    "dry_run": false,
-    "recovery": false,
-    "url": null,
-    "issues": []
-  },
+  "run": null,
   "last_run": {
-    "number": 19,
+    "number": 20,
     "outcome": "success",
     "mode": "test",
-    "started_at": "2026-09-26T09:57:02Z",
-    "ended_at": "2026-09-26T09:58:43Z",
-    "phase": "review",
-    "summary": "Test: T-015 succeeded, notifications verified on device, moved to review",
+    "started_at": "2026-09-26T10:04:11Z",
+    "ended_at": "2026-09-26T10:12:46Z",
+    "phase": "improve",
+    "summary": "Review: 3 high-severity findings (Critic PASS), moved to improve",
     "url": null,
     "notes": []
   },
   "stats": {
-    "total_runs": 19,
-    "successful_runs": 19,
+    "total_runs": 20,
+    "successful_runs": 20,
     "failed_runs": 0,
     "skipped_runs": 0,
     "consecutive_failures": 0
   },
   "halted": false,
   "halt_reason": null,
-  "updated_at": "2026-09-26T09:58:43Z"
+  "updated_at": "2026-09-26T10:12:46Z"
 }
