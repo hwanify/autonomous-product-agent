@@ -20,7 +20,7 @@
   ],
   "profiles": {
     "test": {
-      "max_turns": 32,
+      "max_turns": 90,
       "allowed_tools": [
         "Read", "Write", "Edit", "MultiEdit", "Glob", "Grep", "LS", "TodoWrite",
         "Task", "WebSearch", "WebFetch",
@@ -36,7 +36,7 @@
       ]
     },
     "live": {
-      "max_turns": 70,
+      "max_turns": 120,
       "allowed_tools": [
         "Read", "Write", "Edit", "MultiEdit", "Glob", "Grep", "LS", "TodoWrite",
         "Task", "WebSearch", "WebFetch",
