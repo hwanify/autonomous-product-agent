@@ -20,7 +20,7 @@ RUNS_LOG_PATH = STATE_DIR / "runs.jsonl"
 STATUS_PATH = STATE_DIR / "STATUS.md"
 PROMPT_TEMPLATE_PATH = ROOT / "agent" / "prompts" / "run.md"
 
-PHASES = ["discover", "research", "validate", "design", "implement", "test", "review", "improve"]
+PHASES = ["explore", "design", "implement", "test", "review", "improve"]
 TASK_STATUSES = ["in_progress", "blocked", "done"]
 MODES = ["test", "live"]
 MAX_COMPLETED_TASKS = 20

@@ -1,7 +1,8 @@
 # autonomous-product-agent
 
-자율적으로 제품을 **발굴 → 경쟁 조사 → 검증 → MVP 설계 → 구현 → 테스트 → 비판적 검토 → 개선** 하는
-Claude Code 에이전트. GitHub Actions 에서 실행되며, 사람은 iPhone(GitHub 앱/웹)만으로 운영할 수 있습니다.
+완전 자율로 **Expo(React Native) 네이티브 앱**을 **발굴 → 경쟁 조사 → 검증 → MVP 설계 → 구현 → 테스트 → 비판적 검토 → 개선**
+하는 Claude Code 에이전트. GitHub Actions/Claude Code Routine 에서 실행되며, 사람은 iPhone(GitHub 앱 + Expo Go 앱)만으로 운영·확인할 수 있습니다.
+사람 승인 없이 진행되며(검증은 독립 Critic subagent 가 담당), 방향을 바꾸고 싶을 때만 `mission.md`/`state/inbox.md` 로 개입합니다.
 
 ## 빠른 확인
 - 현재 상태: [`state/STATUS.md`](state/STATUS.md) (첫 실행 후 생성)
@@ -34,3 +35,11 @@ product/                   에이전트가 만드는 제품 코드
 - 지시: `agent-inbox` 라벨을 붙인 Issue 작성, 또는 Run workflow 의 `instruction` 입력
 - 정지: `state/config.json` 에서 `"paused": true`
 - 자동 실행: `state/config.json` 에서 `"schedule_enabled": true` (6시간마다)
+
+## 실행 방식 2가지
+1. **Claude Code Routine (Claude 요금제 사용, API 키 불필요)** — claude.ai/code 의 Routine 이 예약 시각에 새 세션을 열고
+   `bash agent/scripts/routine_run.sh start` → 작업 1개 수행 → `bash agent/scripts/routine_run.sh finish success` 를 실행.
+   Routine 관리(주기 변경/중지): claude.ai/code 의 Routines 메뉴.
+2. **GitHub Actions** (`.github/workflows/agent.yml`) — `ANTHROPIC_API_KEY` 또는 `CLAUDE_CODE_OAUTH_TOKEN` Secret 필요.
+
+두 방식 모두 같은 `state/` 와 `agent/work` 브랜치를 사용하므로 섞어 써도 이어서 작업합니다.

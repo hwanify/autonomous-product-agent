@@ -35,7 +35,7 @@
 | Demonstrability | 사람이 iPhone에서 Expo Go로 바로 실행해 확인할 수 있는가 |
 | Differentiation | 경쟁 제품 대비 한 문장으로 설명되는 차별점이 있는가 |
 
-합계 18점 이상이고 Feasibility ≥ 4 인 아이디어만 validate 단계로 보낸다.
+합계 18점 이상이고 Feasibility ≥ 4 인 아이디어만 경쟁 조사·검증(explore 단계, CLAUDE.md §2.1)으로 보낸다.
 
 ## 5. 성공 기준 (MVP 완료 정의)
 
