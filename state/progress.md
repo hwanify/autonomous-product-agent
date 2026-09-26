@@ -57,3 +57,11 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 결정: **multi-timer(요리용 멀티 타이머) 선정.** phase `explore` → `design` 전이. 남은 explore 후보(T-004, split-bill)는 보류.
 - 산출물: docs/research/multi-timer.md(갱신), docs/validation/multi-timer.md(최종)
 - 다음 할 일: design 단계 — docs/design/mvp.md 작성. **반드시 첫 구현 작업으로 "Expo Go 실기기에서 앱 종료/백그라운드 상태에서도 예약 로컬 알림이 소리+배너로 울리는지" 검증을 포함할 것** (실패 시 즉시 pivot 조건부 선정이었음, D-007 참조).
+
+## Run #6 — 2026-09-26 02:13 UTC — phase: design → implement
+- 작업: T-006 docs/design/mvp.md 작성 (MVP 범위, 시나리오, 화면흐름, 기술구조, 테스트계획, 구현작업 분해)
+- 결과: done
+- 한 일: multi-timer 선정 근거를 바탕으로 MVP 설계 1차 작성 → Critic 1차 REWORK("에이전트는 아이폰이 없어 실기기 검증을 사람에게 넘기는 hand-off 절차가 빠짐", "검증 작업이 4개를 한 덩어리로 과하게 묶임"). 지적 반영해 T-007(에이전트가 끝까지 할 구현: Expo 프로젝트 초기화+알림 데모)과 T-008(사람 hand-off 검증 게이트: current_task blocked 전환 + state/inbox.md 회신 대기 절차 명시)로 분리, T-009~T-013 으로 나머지 작업 재배치 → Critic 2차 **PASS**(유의사항: T-012 크기, feasibility 재확인 필요 — 이미 mvp.md §7 에 축소 후보 명시됨). Critic 판정 이력과 원문 코멘트는 state/decisions.md D-008/D-009 에 기록.
+- 결정: MVP 설계 확정. phase `design` → `implement` 전이. backlog 를 T-007~T-013(phase: implement)로 교체.
+- 산출물: docs/design/mvp.md
+- 다음 할 일: T-007 — `product/` 에 Expo 프로젝트 초기화 + expo-notifications 설치·권한 요청 + 알림 예약 데모 코드 작성. 그 다음 T-008(사람에게 실기기 검증 요청, blocked 전환)이 이어짐.

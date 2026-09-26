@@ -72,3 +72,18 @@
 - 결정: **multi-timer(요리용 멀티 타이머)를 선정**한다. `phase`: explore → **design** 전이. `product.name`="요리용 멀티 타이머", `product.status`="selected". backlog 의 남은 explore 후보(T-004, split-bill)는 이미 후보 선정이 끝났으므로 제거(폐기가 아니라 보류 — 이번 제품이 review 단계에서 pivot 판정을 받으면 재고려 가능).
 - 근거: mission.md §4 기준 재점수 20점(통과) + Critic PASS. Critic 이 지적한 리스크 2가지(Expo Go 환경 검증 필요, 시장 포화도)는 design/implement 단계 첫 작업에 명시적으로 반영.
 - 되돌릴 조건: design 첫 구현 작업(실기기 알림 검증)이 실패하면 즉시 이 선정을 재검토(pivot, explore cycle+1)
+
+## D-008 — 2026-09-26 — Run #6 — MVP 설계(docs/design/mvp.md) 1차 → Critic REWORK
+- 맥락: T-006. multi-timer 선정 근거(docs/validation/multi-timer.md)를 바탕으로 MVP 범위/시나리오/화면흐름/기술구조/테스트계획/구현작업(T-007~T-012)을 설계.
+- Critic 게이트: 1차 **REWORK**.
+  - 핵심 코멘트(원문 인용): "이 에이전트는 GitHub Actions 컨테이너에서 실행되며 아이폰이 없다... T-007을 마치 에이전트가 스스로 끝낼 수 있는 '구현 작업'처럼 배치했다... hand-off(blocked 상태 전환 → 사람 회신 대기 → 다음 실행이 판정) 절차가 문서 어디에도 명시돼 있지 않다", "T-007 이 사실상 4개 작업(프로젝트 초기화/패키지 설치/권한+스케줄링 구현/실기기 수동 검증)을 한 덩어리로 묶었다... CLAUDE.md §3.1... 을 낙관적으로 본 것".
+- 결정: T-007 을 "에이전트가 끝까지 할 수 있는 구현"과 "사람에게 넘기는 검증(T-008, blocked+inbox 회신 hand-off)"으로 분리해 재작성 후 같은 실행에서 재제출.
+- 근거: 지적이 구체적이고 turn 예산 여유 있음.
+
+## D-009 — 2026-09-26 — Run #6 — MVP 설계 2차 → Critic PASS, design→implement 전이
+- 맥락: D-008 의 지적을 반영해 T-007(구현)/T-008(사람 hand-off 검증 게이트, blocked 절차 명시)로 분리하고 T-009~T-013 으로 나머지 구현 작업 재배치.
+- Critic 게이트: 2차 **PASS**.
+  - 핵심 코멘트(원문 인용): "이전 REWORK의 두 핵심 지적(검증 주체 불명확, 작업 과대)은 이번 버전에서 실질적으로 해소됐다", 단 유의사항: "T-008의 '다른 explore/개선 작업 진행' 대안이 현재 backlog 구조상 사실상 존재하지 않아 실효성이 없다"(→ 즉시 문구를 "inbox 짧게 확인 후 종료"로 단순화해 반영함), "T-012는 여전히 다소 크다"(→ implement 단계에서 T-012 착수 전 추가로 쪼갤지 재검토할 것), "Feasibility(5~10회 실행 내 완성) 관점에서 explore~design 에 이미 6회를 썼다... 재확인이 필요"(→ implement 진행 중 진도가 느리면 review 없이도 범위를 줄이는 것을 고려할 것, 특히 T-011 프리셋을 가장 먼저 잘라낼 후보로 mvp.md §7 에 이미 명시함).
+- 결정: **MVP 설계를 확정**한다. `phase`: design → **implement** 전이. backlog 를 T-007~T-013(phase: implement)로 교체.
+- 근거: mission.md §1~§6 기준 위반 없음(Critic 확인), 핵심 리스크(T-007/T-008 검증 게이트) 처리 절차 명확.
+- 되돌릴 조건: T-008 사람 회신이 "실패"면 explore(cycle+1)로 pivot. Feasibility 초과(실행 수 과다) 징후가 뚜렷해지면 T-011(프리셋)부터 범위 축소.
