@@ -10,14 +10,17 @@
 
 ## 2. 탐색 범위 (Focus)
 
-- 개인·소규모 팀의 생산성, 학습, 일상 관리, 개발자 도구 등 **웹 브라우저에서 동작하는 도구**
-- 모바일(iPhone Safari)에서도 쓸 수 있어야 함
-- 사람이 PC 없이 결과물을 확인할 수 있어야 함 (예: 정적 웹앱 → GitHub Pages로 배포 가능)
+- 개인·소규모 팀의 생산성, 학습, 일상 관리, 개발자 도구 등 **모바일 네이티브 앱으로 만들 수 있는 도구**
+- **iPhone에서 네이티브 앱처럼 동작**해야 함 (App Store 배포 여부와 무관하게, 실제 기기에서 실행되는 경험)
+- 사람이 PC/Mac 없이 결과물을 확인할 수 있어야 함
 
 ## 3. 제약 조건
 
-- **비용 0원 인프라**: 유료 서버/DB/API 키가 필요한 아이디어는 제외 (정적 웹, 로컬 저장소 우선)
-- **test 모드에서는 외부 패키지 설치 금지**: 순수 HTML/CSS/JavaScript + Node.js 내장 `node:test` 로 테스트
+- **기술 스택: Expo (React Native)** — Mac/Xcode 없이 클라우드에서 개발하고, **Expo Go 앱**으로 아이폰에서 즉시 실행해 확인한다.
+  App Store 정식 배포(EAS Build, Apple Developer 계정 등록)는 사람이 원할 때 별도로 진행하는 선택 단계이며, 에이전트는 기본적으로
+  `npx expo start` 로 기기에서 바로 실행 가능한 상태까지만 책임진다.
+- **비용 0원 인프라**: 유료 서버/DB/API 키, 유료 빌드(EAS 유료 플랜)가 필요한 아이디어는 제외. Expo Go, 로컬 저장소(AsyncStorage) 우선.
+- 패키지 설치는 Expo/React Native 생태계 안에서 필요한 만큼 허용한다 (npm/npx). 단, 실행마다 최소한으로 추가한다.
 - 개인정보를 수집·전송하지 않을 것
 - 저작권·상표를 침해하지 않을 것, 경쟁 제품의 코드/디자인을 복제하지 않을 것
 - 불법·유해·기만적인 제품 금지
@@ -28,21 +31,24 @@
 |---|---|
 | Pain | 문제가 얼마나 자주·강하게 발생하는가 |
 | Gap | 기존 제품이 해결하지 못하는 빈틈이 명확한가 |
-| Feasibility | 제약 조건 안에서 MVP를 5~10회 실행 내에 만들 수 있는가 |
-| Demonstrability | 사람이 iPhone에서 바로 확인할 수 있는가 |
+| Feasibility | 제약 조건(Expo, 무료) 안에서 MVP를 5~10회 실행 내에 만들 수 있는가 |
+| Demonstrability | 사람이 iPhone에서 Expo Go로 바로 실행해 확인할 수 있는가 |
 | Differentiation | 경쟁 제품 대비 한 문장으로 설명되는 차별점이 있는가 |
 
 합계 18점 이상이고 Feasibility ≥ 4 인 아이디어만 validate 단계로 보낸다.
 
 ## 5. 성공 기준 (MVP 완료 정의)
 
-- 핵심 사용자 시나리오 1개가 끝까지 동작
+- 핵심 사용자 시나리오 1개가 Expo Go 로 실행한 아이폰에서 끝까지 동작
 - 자동화 테스트가 존재하고 통과
-- `product/README.md` 에 사용법·실행법이 있음
+- `product/README.md` 에 `npx expo start` 실행법과 Expo Go 로 여는 방법이 있음
 - 비판적 리뷰(docs/reviews/)에서 "치명적 문제 없음" 판정
 
 ## 6. 사람의 개입 지점
 
+- **아이디어 승인 (필수 관문)**: `validate` 단계에서 에이전트가 아이디어를 하나 선정하면, 곧바로 설계·구현에 들어가지 않고
+  사람의 승인을 기다린다 (CLAUDE.md §3 참조). `state/STATUS.md` 에 "🙋 사람의 결정 필요"로 표시되며,
+  `state/inbox.md` 에 `승인: T-00X` 또는 `거부: T-00X (이유)` 를 적으면 다음 실행에서 반영된다.
 - `state/inbox.md` 또는 `agent-inbox` 라벨 Issue 로 지시
 - `state/config.json` 의 `paused: true` 로 즉시 정지
 - 에이전트가 `blocked` 상태로 사람의 결정을 요청하면 `state/STATUS.md` 에 표시됨

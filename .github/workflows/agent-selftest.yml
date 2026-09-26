@@ -27,7 +27,9 @@ jobs:
       - name: Product tests (if present)
         run: |
           if [ -f product/package.json ]; then
-            cd product && npm test
+            cd product
+            npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+            npm test
           else
             echo "No product yet"
           fi

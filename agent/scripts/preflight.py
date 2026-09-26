@@ -98,7 +98,7 @@ def build_run_context(state: dict, cfg: dict, mode: str, run_number: int, profil
     if mode == "test":
         lines += [
             "## TEST 모드 제한",
-            "- 외부 패키지 설치 금지 (npm/pip install 불가). 순수 JS + `node --test` 사용.",
+            "- npm/npx 는 허용되지만 (Expo 앱이라 필요) pip install 은 금지. git push/commit 은 여전히 금지.",
             "- 작업 범위를 작게 유지하라. 한 번에 한 개 작업만.",
             "",
         ]

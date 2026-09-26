@@ -5,3 +5,16 @@ __pycache__/
 .DS_Store
 .env
 .env.*
+
+# Expo / React Native
+.expo/
+.expo-shared/
+dist/
+web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+ios/
+android/
