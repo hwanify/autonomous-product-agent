@@ -65,3 +65,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 결정: MVP 설계 확정. phase `design` → `implement` 전이. backlog 를 T-007~T-013(phase: implement)로 교체.
 - 산출물: docs/design/mvp.md
 - 다음 할 일: T-007 — `product/` 에 Expo 프로젝트 초기화 + expo-notifications 설치·권한 요청 + 알림 예약 데모 코드 작성. 그 다음 T-008(사람에게 실기기 검증 요청, blocked 전환)이 이어짐.
+
+## Run #7 — 2026-09-26 03:03 UTC — phase: implement
+- 작업: T-007 product/ 에 Expo 프로젝트 초기화 + expo-notifications 설치 + 알림 권한 요청/예약 데모 코드 작성
+- 결과: done
+- 한 일: `npx create-expo-app@latest . --template blank-typescript` 로 `product/` 에 Expo SDK 57(managed workflow, TypeScript) 프로젝트 생성. `npx expo install expo-notifications` 이 컨테이너 네트워크 정책으로 실패(호환성 체크 API 차단, "HTTP Proxy Network Error: Forbidden")해서 `npm install expo-notifications` 로 직접 설치 후 버전(`^57.0.21`)이 SDK 57 과 맞는지 수동 확인(D-010). WebSearch로 로컬 알림이 Expo Go 에서 동작한다는 사실과 `scheduleNotificationAsync` 의 최신 트리거 API 형태(`SchedulableTriggerInputTypes.TIME_INTERVAL`)를 확인(docs.expo.dev 는 WebFetch 로 접근 불가해 대체 조사, D-010). `App.tsx` 를 알림 권한 요청 + 10/30/60초 뒤 알림 예약 버튼이 있는 검증 데모 화면으로 작성. `npx tsc --noEmit` 통과 확인. `product/README.md` 를 현재 상태에 맞게 갱신(실행법, T-007 진행 상황, npm install 예외 사유 기록). implement phase 는 Critic 게이트 대상이 아니므로(§1 Step 3.5, explore/design/review 만 해당) 호출하지 않음.
+- 산출물: product/App.tsx, product/package.json, product/app.json 등 Expo 프로젝트 전체, product/README.md
+- 다음 할 일: T-008 — 사람 hand-off 검증 게이트. product/README.md 에 실기기 검증 요청을 구체적으로 적고 current_task 를 blocked 로 전환, state/inbox.md 회신을 요청한다.

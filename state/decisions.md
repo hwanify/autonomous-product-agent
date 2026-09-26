@@ -87,3 +87,10 @@
 - 결정: **MVP 설계를 확정**한다. `phase`: design → **implement** 전이. backlog 를 T-007~T-013(phase: implement)로 교체.
 - 근거: mission.md §1~§6 기준 위반 없음(Critic 확인), 핵심 리스크(T-007/T-008 검증 게이트) 처리 절차 명확.
 - 되돌릴 조건: T-008 사람 회신이 "실패"면 explore(cycle+1)로 pivot. Feasibility 초과(실행 수 과다) 징후가 뚜렷해지면 T-011(프리셋)부터 범위 축소.
+
+## D-010 — 2026-09-26 — Run #7 — T-007 구현 중 하네스 관련 이슈 2건 (기록용, Critic 게이트 대상 아님)
+- 맥락: T-007(Expo 프로젝트 초기화 + expo-notifications 설치 + 알림 데모)을 수행하며 발견한 환경 제약.
+- 이슈 1 — `npx expo install` 실패: 이 컨테이너의 네트워크 정책이 `expo install` 이 내부적으로 호출하는 호환성 체크 API(React Native Directory 등으로 추정)를 막아 "HTTP Proxy Network Error: Forbidden" 로 전체 명령이 실패함. **대응**: `npm install expo-notifications` 로 직접 설치한 뒤 `package.json` 의 버전(`^57.0.21`)이 설치된 Expo(`~57.0.25`) 와 SDK 넘버가 일치하는지 수동 확인함(정상). 앞으로 T-010/T-011 에서 새 패키지(`@react-native-async-storage/async-storage`)를 추가할 때도 `npx expo install` 이 같은 이유로 실패하면 동일하게 `npm install` + 버전 수동 확인으로 대응할 것.
+- 이슈 2 — `WebFetch` 로 `docs.expo.dev` 접근 불가(`EGRESS_BLOCKED`): product/AGENTS.md(create-expo-app 템플릿이 생성)가 "Expo API 작성 전 반드시 버전별 공식 문서를 fetch 하라"고 안내하지만 이 도메인은 에이전트 네트워크 정책에서도 막혀 있음. **대응**: WebSearch(검색 스니펫)로 대체해 `expo-notifications` 의 `scheduleNotificationAsync` API 형태(`trigger: {type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds, repeats}`)와 "로컬 알림은 Expo Go 에서도 동작한다"는 사실을 확인함(출처: WebSearch 결과, docs.expo.dev 원문은 직접 확인 못 함 — 완전한 확신은 아니므로 T-008 실기기 검증이 여전히 필수).
+- 결정: 하네스 개선 제안은 아님(에이전트가 알아서 우회 가능한 수준). 다만 반복적으로 마주칠 패턴이라 다음 실행들이 같은 문제로 멈추지 않도록 기록만 남김.
+- 되돌릴 조건: 해당 없음(정보성 기록)
