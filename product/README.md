@@ -59,7 +59,8 @@ lib/presets.ts                 AsyncStorage 래퍼: 프리셋 저장/불러오�
 
 - **(해결됨, Run #17)** 사람이 실기기 검증을 처음 시도했을 때 `Unable to resolve module @react-native-async-storage/async-storage` 에러가 발생했습니다. 원인은 이 문서의 실행법에 `npm install` 단계가 빠져 있었기 때문입니다(패키지 자체는 `package.json`/`package-lock.json` 에 정상적으로 있음). 위 "실행" 섹션에 `npm install` 단계를 추가했습니다.
 - **(해결됨, Run #18)** "+ 새 타이머" 모달의 분/초 입력칸(숫자 키패드)에 iOS 기본적으로 "완료" 키가 없어 키보드가 안 내려가고 "시작" 버튼을 못 누르는 문제가 있었습니다. 키보드 위에 "완료" 버튼(InputAccessoryView)을 추가하고, 모달이 키보드에 가려지지 않도록 KeyboardAvoidingView 로 감쌌습니다(D-017).
-- **(review 단계 검토 대상, Run #19 실사용에서 확인)** 앱을 완전히 재시작하면 타이머 목록 UI가 사라집니다(예약된 알림 자체는 OS 가 들고 있으므로 정상적으로 울립니다 — 사람이 직접 확인함). 설계 당시 이미 예견했던 한계(`docs/design/mvp.md`)인데, 실사용에서 불편함이 보고돼 `review` phase 의 검토 대상으로 확정됐습니다(T-016).
+- **(review 단계 검토 대상, Run #19 실사용에서 확인)** 앱을 완전히 재시작하면 타이머 목록 UI가 사라집니다(예약된 알림 자체는 OS 가 들고 있으므로 정상적으로 울립니다 — 사람이 직접 확인함). 설계 당시 이미 예견했던 한계(`docs/design/mvp.md`)인데, 실사용에서 불편함이 보고돼 `review` phase 의 검토 대상으로 확정됐습니다(T-016, H1 — 아직 미해결).
+- **(해결됨, Run #21)** review-1.md 의 H3: 알림 권한이 꺼진 상태에서 앱을 실행한 뒤, 앱을 나가서 설정(Settings)에서 권한을 허용하고 다시 앱으로 돌아와도 `permissionGranted` 상태가 갱신되지 않아 "시작" 버튼이 계속 "알림 권한이 없습니다" 로 막히는 문제가 있었습니다. `screens/Home.tsx` 에 `AppState` 변경 리스너를 추가해, 앱이 포그라운드(`active`)로 돌아올 때마다 `ensureNotificationPermission()` 을 다시 호출하도록 수정했습니다(D-020). H1(타이머 목록 재시작 시 소실), H2(중복 알림 가능성)는 아직 미해결로 review-1.md 에 남아 있습니다.
 - `npx expo lint` 미설정(네트워크 정책 문제, 위 참고).
 
 ## 패키지 추가 시 참고

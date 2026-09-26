@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "phase": "improve",
+  "phase": "test",
   "cycle": 1,
   "product": {
     "name": "요리용 멀티 타이머",
@@ -10,13 +10,19 @@
   "current_task": null,
   "backlog": [
     {
-      "id": "T-017",
-      "title": "H3 수정: screens/Home.tsx 에 AppState 리스너 추가 — 앱이 포그라운드로 복귀할 때 ensureNotificationPermission() 재호출해 permissionGranted 갱신. 검증: npx tsc --noEmit, npm test 회귀 확인",
-      "phase": "improve",
+      "id": "T-018",
+      "title": "T-017(H3 수정) 검증: 자동화 테스트 결과를 docs/reviews/test-2.md 로 정리 + 사람에게 실기기 검증 요청(알림 권한을 끈 상태로 실행 → 설정에서 권한 허용 → 앱으로 복귀 → '시작' 버튼이 정상 동작하는지 확인)",
+      "phase": "test",
       "priority": 1
     }
   ],
   "completed_tasks": [
+    {
+      "id": "T-017",
+      "title": "H3 수정: screens/Home.tsx 에 AppState 리스너 추가해 포그라운드 복귀 시 알림 권한 재확인 (D-020)",
+      "phase": "improve",
+      "run": 21
+    },
     {
       "id": "T-016",
       "title": "review phase 비판적 검토 — 치명0/높음3(H1,H2,H3)/중간3/낮음2, docs/reviews/review-1.md (Critic PASS 2차)",
@@ -116,36 +122,26 @@
   ],
   "run_summary": "",
   "handled_issues": [],
-  "run": {
-    "number": 21,
-    "mode": "test",
-    "status": "running",
-    "started_at": "2026-09-26T11:04:40Z",
-    "event": "routine",
-    "dry_run": false,
-    "recovery": false,
-    "url": null,
-    "issues": []
-  },
+  "run": null,
   "last_run": {
-    "number": 20,
+    "number": 21,
     "outcome": "success",
     "mode": "test",
-    "started_at": "2026-09-26T10:04:11Z",
-    "ended_at": "2026-09-26T10:12:46Z",
-    "phase": "improve",
-    "summary": "Review: 3 high-severity findings (Critic PASS), moved to improve",
+    "started_at": "2026-09-26T11:04:40Z",
+    "ended_at": "2026-09-26T11:09:09Z",
+    "phase": "test",
+    "summary": "Fixed H3 (AppState listener rechecks notification permission), improve to test",
     "url": null,
     "notes": []
   },
   "stats": {
-    "total_runs": 20,
-    "successful_runs": 20,
+    "total_runs": 21,
+    "successful_runs": 21,
     "failed_runs": 0,
     "skipped_runs": 0,
     "consecutive_failures": 0
   },
   "halted": false,
   "halt_reason": null,
-  "updated_at": "2026-09-26T10:12:46Z"
+  "updated_at": "2026-09-26T11:09:09Z"
 }

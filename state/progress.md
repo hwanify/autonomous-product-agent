@@ -166,3 +166,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 결정: review 결론 확정(치명 0/높음 3건/중간 3건/낮음 2건). phase `review`→`improve` 전이. backlog 에 T-017(H3 수정: AppState 리스너로 포그라운드 복귀 시 알림 권한 재확인) 등록. H1/H2 등 나머지는 다음 루프 후보로 review-1.md 에 기록.
 - 산출물: docs/reviews/review-1.md
 - 다음 할 일: T-017 — screens/Home.tsx 에 AppState 리스너 추가해서 앱이 포그라운드로 복귀할 때 알림 권한을 재확인하도록 수정 + 검증.
+
+## Run #21 — 2026-09-26 — phase: improve → test
+- 작업: T-017 H3 수정 — screens/Home.tsx 에 AppState 리스너로 포그라운드 복귀 시 알림 권한 재확인
+- 결과: done
+- 한 일: review-1.md 의 H3(알림 권한을 나중에 설정에서 켜도 앱을 완전히 재시작하기 전까지 인식 못 해 타이머 생성이 막히는 문제)를 수정. `screens/Home.tsx` 최상단 `useEffect` 안에 `react-native` 의 `AppState.addEventListener('change', ...)` 리스너를 추가해, 앱이 `active`(포그라운드)로 돌아올 때마다 `ensureNotificationPermission()` 을 재호출하고 `permissionGranted` 를 갱신하도록 함. 언마운트 시 리스너 정리(`subscription.remove()`) 포함. 새 패키지 설치 없이 기존 `react-native` 코어 API만 사용. `npx tsc --noEmit` 통과, `npx jest` 로 기존 35개 테스트 전부 재확인(회귀 없음). `product/README.md` "알려진 한계" 섹션에 해결 내역 기록(D-020). CLAUDE.md §3 "improve 1건 완료 → test" 규칙에 따라 phase 를 improve → test 로 전이.
+- 산출물: product/screens/Home.tsx(수정), product/README.md(수정)
+- 다음 할 일: T-018 — 자동화 테스트 재확인 + 사람에게 H3 수정 실기기 검증 요청(알림 권한을 껐다가 설정에서 다시 켜고 앱으로 복귀했을 때 "시작" 버튼이 정상 동작하는지 확인).

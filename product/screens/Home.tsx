@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AppState, Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import TimerCard from '../components/TimerCard';
 import NewTimerModal from '../components/NewTimerModal';
 import PresetList from '../components/PresetList';
@@ -45,6 +45,15 @@ export default function Home() {
     configureNotificationHandler();
     ensureNotificationPermission().then(setPermissionGranted);
     loadPresets().then(setPresets);
+
+    // H3: 앱이 백그라운드/Settings 에 갔다가 포그라운드로 돌아올 때 권한 상태가
+    // 바뀌었을 수 있으므로(예: 사용자가 설정에서 알림을 켬) 다시 확인한다.
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        ensureNotificationPermission().then(setPermissionGranted);
+      }
+    });
+    return () => subscription.remove();
   }, []);
 
   useEffect(() => {

@@ -160,3 +160,12 @@
 - 결정: review 결론(치명 0, 높음 3건, 중간 3건, 낮음 2건)을 확정한다. CLAUDE.md §3 전이 규칙("치명/높음 문제가 있으면 → improve")에 따라 `phase`: review → **improve** 전이. backlog 에 T-017(H3 수정: `AppState` 리스너로 포그라운드 복귀 시 알림 권한 재확인) 등록. H1/H2, M1~M3, L1~L2 는 다음 test→review→improve 루프 후보로 남김(review-1.md 에 기록).
 - 근거: Critic PASS + mission.md §1/§5 기준상 핵심 동작을 완전히 막는 결함이 다음 개선 대상으로 타당함.
 - 되돌릴 조건: H3 수정 후 다음 review 사이클에서 H1/H2 가 실제로 더 빈번하다는 근거(예: 사용자가 다시 겪음)가 나오면 우선순위 재조정.
+
+## D-020 — 2026-09-26 — Run #21 — T-017 H3 수정 완료, improve → test 전이
+- 맥락: T-017. review-1.md 의 H3(알림 권한이 나중에 설정에서 켜져도 앱 재시작 전까지 인식 못 함, D-019 에서 Critic 1차 REWORK 로 지적됨)를 수정.
+- 조사: `screens/Home.tsx` 의 최상단 `useEffect(() => { ...; ensureNotificationPermission().then(setPermissionGranted); ... }, [])` 가 마운트 시 1회만 실행되고, 이후 권한 상태 변화를 감지할 방법이 전혀 없었음을 재확인.
+- 결정: `react-native` 의 `AppState` 를 import 해, 같은 `useEffect` 안에 `AppState.addEventListener('change', ...)` 리스너를 추가. `nextState === 'active'`(앱이 포그라운드로 복귀)일 때마다 `ensureNotificationPermission()` 을 재호출해 `permissionGranted` 를 갱신하도록 함. 언마운트 시 `subscription.remove()` 로 정리. 새 패키지 설치 없이 `react-native` 코어 API만 사용(설계 변경 최소화, Critic이 지적한 범위와 정확히 일치).
+- 검증: `npx tsc --noEmit` 통과(타입 에러 없음). `npx jest` 전체 재실행 — 기존 35개 테스트 전부 통과, 회귀 없음(이 훅은 UI 컴포넌트 내부라 기존 순수 함수 테스트 스위트에는 영향 없음 — 수동 코드 리뷰로 로직 검증). `product/README.md` "알려진 한계" 섹션에 해결 내역 기록.
+- phase 전이: CLAUDE.md §3 "improve: 개선 1건 완료 → test" 규칙에 따라 `phase`: improve → **test**. backlog 에 T-018(자동화 테스트 재확인 + 사람에게 H3 수정 검증 요청: 알림 권한을 껐다가 설정에서 다시 켜고 앱으로 돌아왔을 때 "시작" 버튼이 정상 동작하는지) 등록.
+- 근거: Critic 게이트는 이번 작업(코드 수정)에는 적용되지 않음 — §1 Step 3.5 는 explore/design/review 의 "결론"에만 적용되고, improve 는 해당 없음(구현 작업).
+- 되돌릴 조건: 사람의 실기기 재검증에서 이 수정 후에도 여전히 권한 상태가 갱신되지 않는다는 보고가 오면 원인 재조사(예: iOS 가 `AppState` 이벤트를 특정 상황에서 발생시키지 않는 경우가 있는지 추가 조사 필요).
