@@ -41,3 +41,11 @@
 - 근거: "crashed" 판정은 인터럽트 시점의 불완전한 스냅샷이었고, 이후 실제로 산출물(docs/research/multi-timer.md)이 존재하며 근거(WebSearch 출처)를 갖춘 완료된 작업임. 사실과 다른 기록을 남기는 것이 오히려 상태 파일의 신뢰성을 해침.
 - 되돌릴 조건: docs/research/multi-timer.md 의 내용이 실제로는 부실하거나 근거가 없다고 재검토에서 밝혀지면, T-002를 explore 단계에서 재점수·판정 시 다시 열어 보완
 - Critic 게이트 해당 없음 (아이디어 선정/기각·설계 확정·심각도 판정이 아니라 실행 이력 정정)
+
+## D-004 — 2026-09-26 — Run #3 — interval-timer 기각 (Critic PASS)
+- 맥락: T-003. docs/research/interval-timer.md 로 App Store 유사 앱 9개 이상을 조사한 결과, "무료로 커스텀 인터벌 시퀀스 무제한 저장"이라는 애초 Gap 가설이 이미 최소 2개 앱(Workout Timer Custom Intervals, GymPulseTimer)에 의해 충족되고 있음을 확인. docs/validation/interval-timer.md 에서 재점수(Pain3/Gap1/Feasibility5/Demonstrability5/Differentiation1 = 15점, 기준 18점 미달)와 반대 논거를 정리하고 기각 결론을 냄.
+- Critic 게이트: 독립 subagent(mission.md + docs/validation/interval-timer.md, docs/research/interval-timer.md 만 제공, 이번 실행 추론과정 미제공) 호출 결과 **PASS**.
+  - Critic 핵심 코멘트(원문 인용): "조사 자체가 얕다(WebSearch 스니펫 기반, 실제 앱 미설치)", "Pain 점수 하향(4→3)이 Gap 사유를 이중 반영한 방법론적 혼동 — Pain을 원래 4로 되돌려도 합계 16점(4+1+5+5+1)으로 여전히 미달", "한국 시장 미조사", "그럼에도 완전 무료·무제한 경쟁 앱이 최소 2개 확인된 사실 자체가 Gap/Differentiation을 낮게 유지시키는 강한 근거이며 합리적 재조정 시나리오 대부분에서 18점 통과가 재현되지 않음". 최종 판정: "결론(기각)은 근거가 충분하고 견고하다."
+- 결정: interval-timer 후보를 **기각**한다. 다음 우선순위 후보로 진행한다.
+- 근거: 재점수 15점(기준 미달) + Critic PASS. 개선사항(Critic 제안): 향후 문서에서 Pain(문제 자체의 강도)과 Gap(경쟁 제품의 빈틈)을 방법론적으로 분리해서 채점할 것.
+- 되돌릴 조건: 한국 시장 등 미조사 영역에서 새로운 강한 차별점 근거가 나오면 재고려 가능 (현재는 backlog 에 없음)

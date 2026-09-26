@@ -34,3 +34,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: WebSearch로 App Store 유사 앱 6개(About Timers, Multi Kitchen & Cooking Timer, Multi Timer: Kitchen Timer, MultiTimer: Multiple timers, All the Timers, Time Timer) 조사. 가격/기능/리뷰 불만 정리. 핵심 발견: (1) 직접 경쟁 앱 중 하나(Multi Kitchen & Cooking Timer)가 "소리 없이 배너만 깜빡임"이라는 치명적 알림 버그로 "쓸모없다"는 혹평을 받고 있어, 확실한 알림이 차별점이 될 수 있음. (2) 반대로 "완전 무료·광고 없음"은 이미 MultiTimer, Multi Timer: Utility 등이 선점하고 있어 ideas-1.md 의 Gap 4점은 과대평가였을 가능성이 있음 (validate 단계에서 재평가 필요). research phase 완료조건(후보별 분석)은 아직 T-003, T-004 가 남아 phase 는 research 유지.
 - 산출물: docs/research/multi-timer.md
 - 다음 할 일: T-003 interval-timer 경쟁 제품 조사
+
+## Run #3 — 2026-09-26 00:58 UTC — phase: explore
+- 작업: T-003 interval-timer(커스텀 인터벌 운동 타이머) 경쟁 조사 → 재점수·판정 (explore 통합 단계)
+- 결과: done
+- 한 일: WebSearch로 App Store 유사 앱 9개 이상 조사(Tabata Pro, Tabata Timer 계열, Intervals Pro, Seconds, Workout Timer Custom Intervals, Interval Timer X, GymPulseTimer 등). 핵심 발견: "무료로 커스텀 인터벌 시퀀스 무제한 저장"이라는 애초 Gap 가설이 이미 최소 2개 앱에 의해 충족되고 있어, 재점수 결과 15점(기준 18점 미달)으로 **기각** 결론. Step 3.5 Critic 게이트(독립 subagent, mission.md+산출물만 제공)를 호출해 PASS 판정 확인 — Critic은 조사가 얕다는 점과 Pain/Gap 채점 방법론 혼선을 지적했으나, 민감도 분석상 결론(기각) 자체는 견고하다고 판정. interval-timer 후보를 최종 기각하고 다음 후보로 진행.
+- 산출물: docs/research/interval-timer.md, docs/validation/interval-timer.md
+- 다음 할 일: T-005(multi-timer 재점수·판정, 기존 조사 활용) 또는 T-004(split-bill 조사) 진행 — backlog 우선순위상 T-005 먼저
