@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "phase": "discover",
+  "phase": "research",
   "cycle": 1,
   "product": {
     "name": null,
@@ -10,25 +10,64 @@
   "current_task": null,
   "backlog": [
     {
+      "id": "T-002",
+      "title": "multi-timer(요리용 멀티 타이머) 경쟁 제품 3~5개 조사, 기능/가격/리뷰 불만 정리",
+      "phase": "research",
+      "priority": 1
+    },
+    {
+      "id": "T-003",
+      "title": "interval-timer(커스텀 인터벌 운동 타이머) 경쟁 제품 3~5개 조사, 기능/가격/리뷰 불만 정리",
+      "phase": "research",
+      "priority": 2
+    },
+    {
+      "id": "T-004",
+      "title": "split-bill(더치페이 정산기) 경쟁 제품 3~5개 조사, 기능/가격/리뷰 불만 정리",
+      "phase": "research",
+      "priority": 3
+    }
+  ],
+  "completed_tasks": [
+    {
       "id": "T-001",
       "title": "mission.md 기준으로 제품 아이디어 후보 5~10개 발굴 및 1차 점수화",
       "phase": "discover",
-      "priority": 1
+      "run": 1
     }
   ],
-  "completed_tasks": [],
   "run_summary": "",
   "handled_issues": [],
-  "run": null,
-  "last_run": null,
+  "run": {
+    "number": 2,
+    "mode": "test",
+    "status": "running",
+    "started_at": "2026-09-26T00:36:23Z",
+    "event": "routine",
+    "dry_run": false,
+    "recovery": false,
+    "url": null,
+    "issues": []
+  },
+  "last_run": {
+    "number": 1,
+    "outcome": "success",
+    "mode": "test",
+    "started_at": "2026-09-26T00:31:42Z",
+    "ended_at": "2026-09-26T00:34:00Z",
+    "phase": "research",
+    "summary": "Discover: brainstormed 8 ideas, scored 3 passed threshold, move to research",
+    "url": null,
+    "notes": []
+  },
   "stats": {
-    "total_runs": 0,
-    "successful_runs": 0,
+    "total_runs": 1,
+    "successful_runs": 1,
     "failed_runs": 0,
     "skipped_runs": 0,
     "consecutive_failures": 0
   },
   "halted": false,
   "halt_reason": null,
-  "updated_at": null
+  "updated_at": "2026-09-26T00:34:00Z"
 }
