@@ -1,13 +1,13 @@
-# Run Context — Run #19
+# Run Context — Run #20
 
 > preflight 가 매 실행마다 새로 생성하는 파일입니다.
 
-- 시작 시각: 2026-09-26T09:57:02Z
+- 시작 시각: 2026-09-26T10:04:11Z
 - 모드: **test**
 - turn 한도: **90** (80% 전에 기록 단계로)
-- 현재 phase: `test` / cycle 1
-- 누적 실행: 18 / 최대 500
-- 이전 실행: #18 `success` — Test: fixed number-pad keyboard dismiss bug in modal (D-017)
+- 현재 phase: `review` / cycle 1
+- 누적 실행: 19 / 최대 500
+- 이전 실행: #19 `success` — Test: T-015 succeeded, notifications verified on device, moved to review
 
 ## TEST 모드 제한
 - npm/npx 는 허용되지만 (Expo 앱이라 필요) pip install 은 금지. git push/commit 은 여전히 금지.
