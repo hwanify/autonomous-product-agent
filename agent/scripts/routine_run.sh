@@ -6,7 +6,18 @@
 #   ... Claude does exactly one task following the prompt / CLAUDE.md ...
 #   bash agent/scripts/routine_run.sh finish success  # or: finish failure
 #
-# Exit code of `start`: 0 = run the task, 3 = skip (paused/halted/limit), other = error.
+# The automatic hourly Routine must always call plain `start` (never --force): the per-hour
+# loop guard below exists specifically to stop it from firing off more than one task attempt
+# on its own within the same hour, regardless of what the model does mid-turn.
+#
+#   bash agent/scripts/routine_run.sh start --force   # same, but skips the per-hour loop guard
+#
+# Use --force ONLY when a human is live in this session and explicitly asks for another task
+# right now (e.g. "다음 작업 해줘" in chat) — that is a real request, not the model looping on
+# its own, so the guard should not block it. Never pass --force from an unattended/automatic
+# firing of the Routine.
+#
+# Exit code of `start`: 0 = run the task, 3 = skip (paused/halted/limit/loop guard), other = error.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -34,15 +45,22 @@ ensure_git_identity() {
 }
 
 cmd_start() {
-  # Hard technical guard against looping within one long-lived Routine session: at most one
-  # task attempt begins per UTC hour in this container, no matter what the model does or how
-  # many times it calls `start`. This does not depend on the model obeying "one task, then
-  # stop" — it is enforced here regardless.
+  local force=0
+  if [ "${1:-}" = "--force" ]; then force=1; fi
+
+  # Hard technical guard against the model looping unattended within one long-lived Routine
+  # session: at most one task attempt begins per UTC hour in this container, no matter how
+  # many times an automatic firing calls `start`. This does not depend on the model obeying
+  # "one task, then stop" — it is enforced here regardless.
+  #
+  # It does NOT apply when a human is live in the session and explicitly asks for another task
+  # right now (`start --force`) — that is a real request, not the model looping on its own.
   local cur_hour lock_file
   cur_hour=$(date -u +%Y%m%d%H)
   lock_file="$TMP/last_run_hour"
-  if [ -f "$lock_file" ] && [ "$(cat "$lock_file")" = "$cur_hour" ]; then
+  if [ "$force" -ne 1 ] && [ -f "$lock_file" ] && [ "$(cat "$lock_file")" = "$cur_hour" ]; then
     echo "SKIP: a task attempt already started in this container during UTC hour $cur_hour; refusing to start another (loop guard)."
+    echo "If a human is asking for this right now, rerun as: bash agent/scripts/routine_run.sh start --force"
     exit 3
   fi
 
@@ -117,7 +135,7 @@ cmd_finish() {
 }
 
 case "${1:-}" in
-  start) cmd_start ;;
+  start) shift; cmd_start "$@" ;;
   finish) shift; cmd_finish "$@" ;;
-  *) echo "usage: $0 start | finish [success|failure]" >&2; exit 2 ;;
+  *) echo "usage: $0 start [--force] | finish [success|failure]" >&2; exit 2 ;;
 esac
