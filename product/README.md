@@ -5,12 +5,16 @@
 
 ## 실행 (아이폰에서 확인하기)
 1. 아이폰 App Store에서 **Expo Go** 앱을 설치합니다.
-2. 이 저장소를 체크아웃한 환경(GitHub Actions/Routine)에서:
+2. 이 저장소를 새로 체크아웃한 환경(Codespaces 등 포함)에서 **반드시 먼저 패키지를 설치**합니다(`node_modules` 는
+   git에 커밋되지 않으므로, 새 환경에서는 이 단계를 건너뛰면 `Unable to resolve module ...` 에러가 납니다):
    ```
    cd product
+   npm install
    npx expo start --tunnel
    ```
 3. 터미널에 뜨는 QR 코드를 Expo Go 로 스캔하면 아이폰에서 바로 실행됩니다.
+4. 그래도 모듈을 못 찾는다는 에러가 나면 Metro 캐시 문제일 수 있습니다: `npx expo start --tunnel -c` (캐시 초기화)
+   로 다시 시도해보세요.
 
 (참고: 이 컨테이너 환경에서는 `--tunnel` 이 쓰는 ngrok 접속이 네트워크 정책으로 막혀 있어 이 방법이 지금 당장은 안 될 수
 있습니다 — 사람이 클라우드 환경 설정에서 네트워크 접근 범위를 넓히면 됩니다. `--tunnel` 없이 로컬 네트워크(LAN)에서
@@ -49,6 +53,7 @@ lib/presets.ts                 AsyncStorage 래퍼: 프리셋 저장/불러오�
 ```
 
 ## 알려진 한계 / 다음 단계 (test phase 로 이연됨)
+- **(해결됨, Run #17)** 사람이 실기기 검증을 처음 시도했을 때 `Unable to resolve module @react-native-async-storage/async-storage` 에러가 발생했습니다. 원인은 이 문서의 실행법에 `npm install` 단계가 빠져 있었기 때문입니다(패키지 자체는 `package.json`/`package-lock.json` 에 정상적으로 있음). 위 "실행" 섹션에 `npm install` 단계를 추가했습니다 — 다시 시도해주세요.
 - **이 앱의 핵심 가치("확실한 알림")가 아직 실제 아이폰에서 검증되지 않았습니다.** 사람이 구현을 먼저 진행하도록
   지시해(`state/decisions.md` D-011) 이 검증을 `test` phase 로 미뤘습니다. `test` phase 에서 가장 먼저 해야 할 일은
   이 앱을 실기기(Expo Go)에서 열어 타이머를 하나 만든 뒤 화면을 끄거나 앱을 완전히 종료하고, 예약된 시간에 소리+배너

@@ -137,3 +137,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: `current_task` 를 blocked 로 전환하고 구체적 검증 요청을 notes 에 기록: (1) '라면' 4분+'계란' 9분 타이머 동시 시작 (2) 화면 끄기/앱 완전 종료 (3) 예약 시각에 소리+배너 알림이 실제로 오는지 확인 (4) 일시정지→재개 시에도 알림이 재개 시점 기준으로 정확한지 확인. 결과를 state/inbox.md 에 남겨달라고 요청. backlog 를 비워 다음 실행들이 이 blocked 상태를 유지하며 다른 작업을 임의로 시작하지 않도록 함(D-015 의 T-015 정의를 그대로 따름).
 - 산출물: 없음(상태 파일만 갱신)
 - 다음 할 일: 사람 회신 대기. 회신이 오면 성공→review phase 전이, 실패→decisions.md 기록 후 explore(cycle+1) pivot 검토(D-007/D-015).
+
+## Run #17 — 2026-09-26 09:28 UTC — phase: test (T-015 blocked, 계속)
+- 작업: T-015 사람 hand-off 검증 처리 중 발생한 실행 오류 대응
+- 결과: blocked (계속 — 사람 재시도 필요)
+- 한 일: 사람이 채팅으로 실기기 테스트 중 `Unable to resolve module @react-native-async-storage/async-storage` 에러 스크린샷을 전달함. `product/package.json`·`package-lock.json` 을 확인해 패키지 자체는 정상 등록돼 있음을 확인하고, 원인이 `product/README.md` 의 실행 안내에 `npm install` 단계가 빠져 있던 문서 버그임을 특정(D-016). README 를 수정해 `npm install` 단계와 Metro 캐시 초기화(`-c`) 안내를 추가하고, "알려진 한계" 섹션에 이번 이슈와 해결 내용을 기록. 이 문제는 제품의 핵심 가치(알림 신뢰성)에 대한 부정적 신호가 아니므로 pivot 대상이 아님을 명시. current_task(T-015)는 계속 blocked 유지하며, 사람에게 수정된 안내대로 다시 시도해달라고 요청.
+- 산출물: product/README.md(수정)
+- 다음 할 일: 사람이 재시도 후 실제 알림 동작 결과를 state/inbox.md 에 남기면, 성공→review phase 전이, (실제 알림이 안 오는) 실패→decisions.md 기록 후 explore(cycle+1) pivot 검토(D-007/D-015).

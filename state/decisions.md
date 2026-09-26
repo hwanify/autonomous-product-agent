@@ -127,3 +127,10 @@
 - 결정: CLAUDE.md §3 전이 규칙("implement: backlog 에 phase:'implement' 작업이 남아 있으면 계속 implement, 없으면 → test")에 따라 `phase`: implement → **test** 전이. backlog 에 test phase 작업 2개 등록: (1) T-014 자동화 테스트 전체 재실행+결과 기록(에이전트가 끝까지 할 수 있음), (2) T-015 [사람 hand-off] 실기기 수동 시나리오 검증 요청 — 이 앱의 핵심 가치(백그라운드/종료 상태 알림)를 사람이 실제 아이폰에서 확인해야 하므로 T-008 과 같은 blocked+inbox 회신 패턴을 재사용.
 - 근거: mission.md §5 성공 기준("핵심 사용자 시나리오 1개가 Expo Go 로 실행한 아이폰에서 끝까지 동작")은 실기기 확인을 요구하고, 에이전트는 아이폰이 없어 직접 수행할 수 없음. D-011 에서 미뤄둔 검증을 여기서 다시 요청하는 것이며, D-007 의 pivot 조건이 그대로 적용됨(실패 시 explore cycle+1 재검토).
 - 되돌릴 조건: T-015 사람 회신이 "실패"면 explore(cycle+1)로 pivot 재검토. "성공"이면 test phase 완료 조건(테스트 전부 통과) 충족 후 review phase 로 전이.
+
+## D-016 — 2026-09-26 — Run #17 — T-015 검증 중 실행 오류 발견 및 README 수정 (블로킹 이슈, pivot 아님)
+- 맥락: 사람이 T-015 요청대로 실기기(Expo Go)에서 앱을 열려고 시도하던 중 `Unable to resolve module @react-native-async-storage/async-storage` 에러 스크린샷을 채팅으로 전달함(경로가 `/workspaces/...` 로 보아 Codespaces 등 새로 체크아웃한 환경으로 추정).
+- 조사: `product/package.json`, `product/package-lock.json` 을 확인한 결과 해당 패키지는 정상적으로 들어있었음(lockfile 에 3회 참조). 반면 `product/README.md` 의 "실행" 섹션은 `cd product` 다음 바로 `npx expo start --tunnel` 을 실행하도록 안내하고 있었고, `npm install` 단계가 빠져 있었음. `node_modules/` 는 `.gitignore` 로 커밋되지 않으므로, 새로 체크아웃한 환경에서는 이 안내를 그대로 따르면 100% 이 에러가 재현된다.
+- 결정: 이것은 제품의 핵심 가치(알림 신뢰성)에 대한 부정적 신호가 아니라 **문서 버그**다. D-007/D-015 의 pivot 조건("실패"）과는 무관함 — 애초에 알림 검증 단계까지 가지도 못했다. README 의 실행 섹션에 `npm install` 단계와 캐시 초기화(`-c`) 안내를 추가해 수정함. T-015 는 계속 blocked 유지하고, 사람에게 이 수정 사항을 반영해 다시 시도해달라고 요청.
+- 근거: 실제 재현 가능한 문서 결함이 확인됐고, 원인이 코드가 아니라 문서라는 것이 package.json/lockfile 조사로 확인됨.
+- 되돌릴 조건: 해당 없음. (재시도 후에도 같은 에러가 나면 별도로 조사 필요 — 예: 사용자 환경의 npm install 실행 위치가 `product/` 가 아닐 가능성.)
