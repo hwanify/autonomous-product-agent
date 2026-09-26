@@ -29,9 +29,6 @@
 - `mission.md`, `state/progress.md` 의 최근 3개 항목, `state/decisions.md` 의 최근 항목
 
 ### Step 2 — 다음 작업 결정 (아래 우선순위대로)
-0. `current_task.status == "blocked"` 이면 **다른 무엇보다 먼저** `state/inbox.md` 를 확인한다.
-   - 응답이 있으면 §3.0 의 규칙대로 처리하고 이어서 진행한다.
-   - 응답이 없으면 새 작업을 시작하지 않는다. `run_summary` 에 "여전히 사람 승인 대기 중"만 남기고 바로 Step 4 로 간다.
 1. `run_context.md` 에 **RECOVERY** 표시가 있고 `current_task.status == "in_progress"` → 그 작업을 이어서 한다.
    먼저 `git status`/`git log -3` 와 산출물 파일을 확인해 어디까지 됐는지 파악한다.
 2. inbox(파일 Pending 항목 또는 Issue)에 지시가 있으면 → 그 지시를 작업으로 만든다.
@@ -92,7 +89,7 @@ Critic 에게 주는 것: `mission.md` 전체와, 이번에 만든 산출물 파
 |---|---|---|---|
 | `discover` | mission.md 범위에서 문제/아이디어 후보 5~10개 도출, 평가 기준으로 1차 점수화 | `docs/ideas/ideas-<cycle>.md` | 상위 1~3개 후보 선정 |
 | `research` | 상위 후보별 경쟁 제품 3~5개 조사 (WebSearch/WebFetch). 기능·가격·리뷰의 불만·빈틈 | `docs/research/<slug>.md` | 후보별 경쟁 분석 표 + 빈틈 요약 |
-| `validate` | 조사 근거로 점수 재평가, 반대 논거(왜 실패할까) 작성, 1개 선정 또는 전부 기각 | `docs/validation/<slug>.md` | 선정 시 **사람 승인 대기**(§3.0) 로 전환, 또는 전부 기각(→discover, cycle+1) 결정이 decisions.md 에 기록 |
+| `validate` | 조사 근거로 점수 재평가, 반대 논거(왜 실패할까) 작성, 1개 선정 또는 전부 기각 | `docs/validation/<slug>.md` | 선정(→design) 또는 기각(→discover, cycle+1) 결정이 decisions.md 에 기록 |
 | `design` | MVP 범위(필수/제외 기능), 사용자 시나리오, 화면 흐름, 기술 구조, 테스트 계획, 구현 작업 분해 | `docs/design/mvp.md` | 구현 작업들이 backlog 에 T-번호로 등록 |
 | `implement` | backlog 의 구현 작업 1개 구현 + 해당 테스트 작성 | `product/` | 작업 단위 코드+테스트 존재 |
 | `test` | 전체 테스트 실행, 실패 수정, 수동 시나리오 점검 결과 기록 | `product/` , `docs/reviews/test-<n>.md` | 테스트 전부 통과 |
@@ -112,24 +109,15 @@ Critic 에게 주는 것: `mission.md` 전체와, 이번에 만든 산출물 파
 ## 3. Phase 전이 규칙 (루프)
 
 ```
-discover → research → validate ─(선정, Critic PASS)→ [사람 승인 대기] ─(승인)→ design → implement ⟲
-                          │                                │(거부)
-                          └─(전부 기각)→ discover ◄─────────┘         test → review → improve → test → review …
-                                  (cycle+1)                                  │
-                                                                             └─(제품 근본 문제: pivot)→ discover (cycle+1)
+discover → research → validate ─(선정, Critic PASS)→ design → implement ⟲ (구현 작업이 남아있는 동안)
+                          │                                       ↓
+                          └─(전부 기각)→ discover              test → review → improve → test → review …
+                                  (cycle+1)                             │
+                                                                        └─(제품 근본 문제: pivot)→ discover (cycle+1)
 ```
 
-## 3.0 아이디어 승인 관문 (사람이 반드시 확인)
-
-`validate` 에서 아이디어를 선정하고 Critic 이 `PASS` 를 주면, **design 으로 자동 전이하지 않는다.** 대신:
-- `current_task = {"id": "T-00X", "title": "<아이디어명> 승인 대기", "phase": "validate", "status": "blocked", "notes": "승인 요청: <한줄 요약>. state/inbox.md 에 `승인: T-00X` 또는 `거부: T-00X (이유)` 로 응답 바람."}`
-- `phase` 는 `validate` 로 유지한다 (design 으로 넘어가지 않음).
-- `docs/validation/<slug>.md` 에 승인 요청 내용(무엇을, 왜, 예상 화면/시나리오)을 사람이 한눈에 볼 수 있게 정리해 둔다.
-
-다음 실행들은 Step 2의 **0번**에 따라 `state/inbox.md` 를 확인한다:
-- `승인: T-00X` 가 있으면 → `current_task.status="done"`, `phase="design"` 으로 전환, backlog 에 design 작업 등록. inbox 항목은 Handled 로 이동.
-- `거부: T-00X (이유)` 가 있으면 → decisions.md 에 거부 사유 기록, `phase="discover"`, `cycle` +1, current_task=null. inbox 항목은 Handled 로 이동.
-- 아무 응답이 없으면 → Step 2-0 규칙대로 아무 것도 하지 않고 종료한다 (같은 승인 요청을 반복해서 만들지 않는다).
+사람의 승인 없이 완전 자율로 진행한다: `validate` 에서 아이디어를 선정하고 Critic 이 `PASS` 를 주면 곧바로 `design` 으로 전이한다.
+(사람이 방향을 바꾸고 싶으면 `mission.md` 수정, `state/inbox.md` 지시, 또는 `paused`/`reset_halt` 로 개입할 수 있다 — 이건 언제든 가능하지만 필수 관문은 아니다.)
 
 - implement: backlog 에 `phase:"implement"` 작업이 남아 있으면 계속 implement, 없으면 → test.
 - test: 실패 시 phase 유지(수정), 전부 통과 → review.
