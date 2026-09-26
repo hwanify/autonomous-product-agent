@@ -80,3 +80,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 결정: T-008 을 "검증 이연"으로 완료 처리. backlog 에서 제거. T-009 가 다음 최우선 작업.
 - 산출물: docs/design/mvp.md(수정), product/README.md(수정)
 - 다음 할 일: T-009 — lib/timer.ts 타이머 코어 로직 + 유닛 테스트
+
+## Run #9 — 2026-09-26 04:04 UTC — phase: implement
+- 작업: T-009 lib/timer.ts 타이머 코어 로직(생성/일시정지/재개/남은시간 계산) + 유닛 테스트
+- 결과: done
+- 한 일: `jest`, `jest-expo`, `@types/jest` 설치 후 `package.json` 에 `"test": "jest"` 스크립트와 `jest-expo` 프리셋 설정, `tsconfig.json` 에 `"types": ["jest"]` 추가. `lib/timer.ts` 에 순수 함수(`createTimer`, `getRemainingSeconds`, `isExpired`, `pauseTimer`, `resumeTimer`, `markDone`, `tick`, 리스트 연산 `addTimer`/`removeTimer`/`updateTimer`/`tickAll`)를 작성 — 타임스탬프(`now` 인자 주입) 기반이라 테스트가 실제 시간에 의존하지 않음. `lib/__tests__/timer.test.ts` 에 일시정지/재개 반복 시 오차 없음, 멱등성(이미 paused/running/done 인 상태에 같은 연산을 다시 적용해도 불변), 여러 타이머 독립적 관리(tickAll) 등을 포함해 21개 테스트 작성 — 전부 통과(`npm test`). `npx tsc --noEmit` 통과. `npx expo lint` 는 D-010 과 같은 네트워크 정책 문제로 실패해 건너뜀(D-012, T-009 범위 밖). `product/README.md` 현재 상태 갱신. implement phase 는 Critic 게이트 대상 아님.
+- 산출물: product/lib/timer.ts, product/lib/__tests__/timer.test.ts, product/package.json, product/tsconfig.json, product/README.md
+- 다음 할 일: T-010 — lib/notifications.ts 알림 스케줄링 래퍼(T-007 데모 코드를 재사용 가능한 모듈로 정리) + 유닛 테스트
