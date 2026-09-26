@@ -94,3 +94,11 @@
 - 이슈 2 — `WebFetch` 로 `docs.expo.dev` 접근 불가(`EGRESS_BLOCKED`): product/AGENTS.md(create-expo-app 템플릿이 생성)가 "Expo API 작성 전 반드시 버전별 공식 문서를 fetch 하라"고 안내하지만 이 도메인은 에이전트 네트워크 정책에서도 막혀 있음. **대응**: WebSearch(검색 스니펫)로 대체해 `expo-notifications` 의 `scheduleNotificationAsync` API 형태(`trigger: {type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds, repeats}`)와 "로컬 알림은 Expo Go 에서도 동작한다"는 사실을 확인함(출처: WebSearch 결과, docs.expo.dev 원문은 직접 확인 못 함 — 완전한 확신은 아니므로 T-008 실기기 검증이 여전히 필수).
 - 결정: 하네스 개선 제안은 아님(에이전트가 알아서 우회 가능한 수준). 다만 반복적으로 마주칠 패턴이라 다음 실행들이 같은 문제로 멈추지 않도록 기록만 남김.
 - 되돌릴 조건: 해당 없음(정보성 기록)
+
+## D-011 — 2026-09-26 — Run #8 — T-008(사람 실기기 검증 hand-off) 처리 방식 변경: 사람이 채팅에서 직접 생략 지시
+- 맥락: T-008 은 원래 "current_task.status=blocked 전환 후 사람이 Expo Go 실기기에서 백그라운드/종료 상태 알림을 확인해 state/inbox.md 에 회신"하는 hand-off 게이트였다(docs/design/mvp.md §6, D-008/D-009). 그런데 이번 Run #8 은 사람이 이 Claude Code 세션 채팅에서 직접 "사람 테스트는없이 ㄱㄱ"(실기기 검증 없이 진행)라고 명시적으로 지시한 직후 시작됐다. mission.md §6 은 사람이 "state/inbox.md 또는 agent-inbox 라벨 Issue" 로 방향을 바꿀 수 있다고 규정하지만, 이 세션 자체가 사람이 실시간으로 지시를 내리는 채널이므로 이 지시를 inbox 지시와 동등하게 취급한다.
+- 선택지: (A) 원래 설계대로 blocked 유지하며 사람 회신을 계속 기다림 (B) 사람 지시를 그대로 따라 검증 없이 T-009 이후로 즉시 진행 (C) 검증을 건너뛰되, 나중에 반드시 확인하도록 `test` phase 로 이연
+- 결정: (C) — 지금 당장 실기기 검증을 하지 않고 구현(T-009~)을 계속 진행한다. 단, **이 검증은 사라지는 게 아니라 CLAUDE.md phase 표의 `test` 단계("수동 시나리오 점검 결과 기록")로 이연**한다. mission.md §5 성공 기준("핵심 사용자 시나리오 1개가 Expo Go 로 실행한 아이폰에서 끝까지 동작")이 어차피 실기기 확인을 요구하므로, MVP 전체 기능을 다 만든 뒤 한 번에 종합적으로 실기기 검증하는 편이 매 작업마다 blocked 로 멈추는 것보다 효율적이라고 판단했다(사람이 이를 선호한다는 명확한 신호이기도 함).
+- 근거: 사람의 명시적 지시(가장 강한 근거 — mission.md §6 이 부여한 개입 권한 행사). 기술적으로도 T-007 구현 중 WebSearch 로 확인한 "로컬 알림은 Expo Go 에서도 동작한다"는 근거(D-010)가 있어, 완전히 근거 없이 진행하는 것은 아니다.
+- **인수한 리스크(반드시 기억할 것)**: multi-timer 선정의 유일한 실질적 차별점(D-007)인 "확실한 알림"이 아직 실기기로 검증되지 않았다. `test` phase 진입 시 반드시 최우선으로 이 실기기 검증을 수행하고, 만약 실패하면 그 시점에 decisions.md 에 기록하고 explore(cycle+1) pivot 을 다시 고려해야 한다 — 이번 결정이 그 pivot 조건 자체를 없앤 것은 아니고 **검증 시점만 뒤로 미룬 것**이다.
+- 되돌릴 조건: `test` phase 에서의 실기기 검증이 실패하면 즉시 pivot 재검토(원래 D-007 조건 그대로 유효).

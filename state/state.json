@@ -10,43 +10,43 @@
   "current_task": null,
   "backlog": [
     {
-      "id": "T-008",
-      "title": "[사람 hand-off, 검증 게이트] T-007 데모 실행법을 product/README.md 에 적고 current_task.status=blocked 전환. 사람에게 Expo Go 실기기에서 백그라운드/종료 상태 알림 검증 요청, state/inbox.md 회신 대기. 성공→T-009 진행, 실패→decisions.md 기록 후 explore(cycle+1) pivot 제안",
-      "phase": "implement",
-      "priority": 1
-    },
-    {
       "id": "T-009",
       "title": "lib/timer.ts 타이머 코어 로직(생성/일시정지/재개/남은시간 계산) + 유닛 테스트",
       "phase": "implement",
-      "priority": 2
+      "priority": 1
     },
     {
       "id": "T-010",
       "title": "lib/notifications.ts 알림 스케줄링 래퍼(T-007 데모를 재사용 가능한 모듈로 정리) + 유닛 테스트",
       "phase": "implement",
-      "priority": 3
+      "priority": 2
     },
     {
       "id": "T-011",
       "title": "lib/presets.ts 프리셋 저장/불러오기(AsyncStorage) + 유닛 테스트",
       "phase": "implement",
-      "priority": 4
+      "priority": 3
     },
     {
       "id": "T-012",
       "title": "홈 화면 UI(타이머 리스트, 새 타이머 모달, 프리셋 리스트) — lib 모듈 연결 (Critic 지적: 크면 착수 전 더 쪼갤 것)",
       "phase": "implement",
-      "priority": 5
+      "priority": 4
     },
     {
       "id": "T-013",
       "title": "product/README.md 최종 정리: npx expo start 실행법, Expo Go 로 QR 스캔해서 여는 방법",
       "phase": "implement",
-      "priority": 6
+      "priority": 5
     }
   ],
   "completed_tasks": [
+    {
+      "id": "T-008",
+      "title": "사람 hand-off 검증 게이트 → 사람 지시로 test phase 로 이연 (검증 미완료, 리스크 인수, D-011)",
+      "phase": "implement",
+      "run": 8
+    },
     {
       "id": "T-007",
       "title": "Expo 프로젝트 초기화 + expo-notifications 설치 + 알림 검증 데모 코드 작성",
@@ -86,36 +86,26 @@
   ],
   "run_summary": "",
   "handled_issues": [],
-  "run": {
-    "number": 8,
-    "mode": "test",
-    "status": "running",
-    "started_at": "2026-09-26T03:25:03Z",
-    "event": "routine",
-    "dry_run": false,
-    "recovery": false,
-    "url": null,
-    "issues": []
-  },
+  "run": null,
   "last_run": {
-    "number": 7,
+    "number": 8,
     "outcome": "success",
     "mode": "test",
-    "started_at": "2026-09-26T03:03:54Z",
-    "ended_at": "2026-09-26T03:09:25Z",
+    "started_at": "2026-09-26T03:25:03Z",
+    "ended_at": "2026-09-26T03:27:06Z",
     "phase": "implement",
-    "summary": "Implement: Expo project init + notifications demo (T-007) done",
+    "summary": "Implement: deferred T-008 device verification to test phase per human",
     "url": null,
     "notes": []
   },
   "stats": {
-    "total_runs": 7,
-    "successful_runs": 7,
+    "total_runs": 8,
+    "successful_runs": 8,
     "failed_runs": 0,
     "skipped_runs": 0,
     "consecutive_failures": 0
   },
   "halted": false,
   "halt_reason": null,
-  "updated_at": "2026-09-26T03:09:25Z"
+  "updated_at": "2026-09-26T03:27:06Z"
 }
