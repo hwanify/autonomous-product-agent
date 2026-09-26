@@ -108,3 +108,10 @@
 - 결정: T-009 범위(타이머 코어 로직 + 유닛 테스트)에 lint 설정은 필수가 아니므로 건너뛰고 `npx tsc --noEmit` 통과와 `npm test` 통과로 완료 기준을 대신함. lint 설정 자체는 나중에(예: test/review phase) 사람이 네트워크 정책을 넓혀주면 재시도.
 - 근거: D-010 과 같은 패턴(이 컨테이너 환경은 npm 레지스트리는 허용하지만 그 외 호환성/설정 체크 API 호출은 막음). 반복 정보이므로 짧게만 기록.
 - 되돌릴 조건: 해당 없음(정보성 기록)
+
+## D-013 — 2026-09-26 — Run #11 — 패키지 SDK 호환 버전 확인 방법 발견 (`npx expo install` 네트워크 우회)
+- 맥락: T-011 에서 `@react-native-async-storage/async-storage` 를 `npm install` 로 받으면 npm 의 "latest" 태그(3.1.1)가 잡히는데, 이는 커뮤니티 패키지라 expo-notifications 처럼 SDK 번호에 맞춰 배포되지 않는다. WebSearch 로 확인한 바 Expo SDK 54+ 에서는 2.2.0 이 호환 버전이라는 정보가 있었고, 실제로 `node_modules/expo/bundledNativeModules.json` 파일 안에 Expo 가 각 SDK 버전에서 기대하는 정확한 패키지 버전 목록이 **로컬에 이미 번들되어 있어 네트워크 없이 확인 가능**함을 발견함(`grep async-storage node_modules/expo/bundledNativeModules.json` → `"2.2.0"`).
+- 결정: `npm install @react-native-async-storage/async-storage@2.2.0 --save-exact` 로 정확한 버전을 재설치함(기존 3.1.1 은 버림).
+- 근거: 버전 불일치는 Expo Go 네이티브 브릿지와 JS 코드 간 API 불일치로 이어져 런타임에 크래시하거나 오작동할 수 있는 실질적 리스크임(D-007/D-011 에서 이미 타이머 알림 신뢰성이 검증되지 않은 상태이므로, 여기서 또 다른 불확실성을 추가하지 않는 것이 중요).
+- **향후 실행을 위한 재사용 가능한 절차**: 새 패키지를 추가할 때 `npx expo install <pkg>` 이 네트워크 정책으로 실패하면(D-010), `npm install <pkg>` 로 우선 받은 뒤 `grep <pkg-name> product/node_modules/expo/bundledNativeModules.json` 으로 SDK 호환 버전을 확인하고, 다르면 `npm install <pkg>@<정확한버전> --save-exact` 로 재설치할 것. (단, `bundledNativeModules.json` 에 없는 패키지는 이 방법이 통하지 않으므로 그때는 별도 조사 필요.)
+- 되돌릴 조건: 해당 없음

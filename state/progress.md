@@ -94,3 +94,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: `product/lib/notifications.ts` 에 `configureNotificationHandler`, `ensureNotificationPermission`, `scheduleTimerNotification`, `cancelTimerNotification` 4개 함수로 `expo-notifications` 를 래핑. App.tsx 에 흩어져 있던 알림 로직(T-007 데모)을 이 모듈 호출로 교체해 컴포넌트에서 분리(설계 원칙 준수). `lib/__tests__/notifications.test.ts` 에서 `jest.mock('expo-notifications', ...)` 로 모킹해 권한 허용/거부/미결정 3가지 분기, TIME_INTERVAL 트리거+repeats:false 검증, 취소 호출 등 7개 테스트 작성 — 전부 통과. `npx tsc --noEmit` 통과, 전체 테스트 28개(timer 21 + notifications 7) 통과.
 - 산출물: product/lib/notifications.ts, product/lib/__tests__/notifications.test.ts, product/App.tsx(리팩터링), product/README.md
 - 다음 할 일: T-011 — lib/presets.ts 프리셋 저장/불러오기(AsyncStorage) + 유닛 테스트
+
+## Run #11 — 2026-09-26 04:19 UTC — phase: implement
+- 작업: T-011 lib/presets.ts 프리셋 저장/불러오기(AsyncStorage) + 유닛 테스트
+- 결과: done
+- 한 일: `@react-native-async-storage/async-storage` 를 `npm install` 로 받으니 npm "latest" 태그(3.1.1)가 잡혔는데, `product/node_modules/expo/bundledNativeModules.json` 을 확인해보니 SDK 57 이 기대하는 버전은 2.2.0 임을 발견 — 정확한 버전(2.2.0)으로 재설치함(D-013, 향후 패키지 추가 시 재사용할 절차로 기록). `lib/presets.ts` 에 순수 함수(`addPreset`, `removePreset`)와 AsyncStorage I/O 함수(`loadPresets`, `savePresets`)를 분리해서 작성 — 저장된 값이 없거나 JSON 이 손상되거나 배열이 아닌 경우 모두 빈 배열을 안전하게 반환. `lib/__tests__/presets.test.ts` 에서 AsyncStorage 를 모킹해 7개 테스트 작성 — 전부 통과. `npx tsc --noEmit` 통과, 전체 테스트 35개(timer 21 + notifications 7 + presets 7) 통과.
+- 산출물: product/lib/presets.ts, product/lib/__tests__/presets.test.ts, product/package.json, product/README.md
+- 다음 할 일: T-012 — 홈 화면 UI(타이머 리스트, 새 타이머 모달, 프리셋 리스트) — lib 모듈 연결. Critic 이 크기 지적을 했으니 착수 전 더 쪼갤지 검토할 것.
