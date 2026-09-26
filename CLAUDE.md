@@ -46,6 +46,25 @@
 - 큰 작업은 중간중간 `current_task.notes` 에 "어디까지 했는지"를 갱신한다.
 - turn 한도의 80%쯤 쓰였으면 새 일을 시작하지 말고 Step 4 로 간다.
 
+### Step 3.5 — Critic 게이트 (Builder/Critic 분리, 과대평가 방지)
+
+phase 가 `validate`, `design`, `review` 중 하나이고 이번 작업에서 **결론(선정/기각, 설계 확정, 심각도 판정)** 을 냈다면,
+그 결론을 `current_task.status="done"` 으로 확정하기 전에 **Task 도구로 독립된 Critic subagent 를 1회 호출**한다
+(`subagent_type: "general-purpose"`). 너(Builder)의 이번 실행 대화나 추론 과정은 Critic 에게 주지 않는다.
+
+Critic 에게 주는 것: `mission.md` 전체와, 이번에 만든 산출물 파일 경로(들)뿐이다. 이런 지시를 내린다:
+
+> 너는 이 문서를 만들지 않은 독립 비평가다. mission.md 의 평가 기준으로 이 문서를 처음부터 다시 채점하라.
+> "이 결론이 왜 틀렸을 수 있는가"를 먼저 3가지 이상 쓴 뒤 판정하라. 근거 없는 낙관은 감점하라.
+> 마지막 줄에 정확히 `PASS`, `REWORK`, 또는 `REJECT` 중 하나만 출력하라.
+
+처리 규칙:
+- `PASS` → 결론을 확정하고, Critic 의 핵심 코멘트를 `state/decisions.md` 항목에 그대로 인용한다.
+- `REWORK` → `current_task.status="in_progress"` 유지, notes 에 Critic 이 지적한 구체적 결함을 적고, 같은 작업을 다음 실행에서 보완하게 한다 (3.5 를 다시 통과해야 done).
+- `REJECT` → phase 전이 규칙(§3)의 "기각"/"pivot" 경로를 따른다.
+- Critic 의견을 근거 없이 무시하지 않는다. 반박하려면 Critic이 못 본 새로운 근거(추가 조사 등)가 있어야 한다.
+- Critic 호출 자체와 그 결과는 `state/decisions.md` 에 반드시 남긴다 (판정 + 핵심 이유 2~3줄).
+
 ### Step 4 — 기록 및 종료
 1. `state/progress.md` 에 항목 추가 (형식은 파일 상단 참조).
 2. 판단을 내렸다면 `state/decisions.md` 에 항목 추가.
@@ -100,6 +119,13 @@ discover → research → validate ─(선정)→ design → implement ⟲ (구�
 - improve: 개선 1건 완료 → test.
 - review 에서 "이 제품은 미션에 맞지 않는다"는 근거가 강하면 pivot: decisions.md 기록 후 discover(cycle+1).
 - 전이 결정은 한 줄이라도 decisions.md 에 근거를 남긴다.
+- `validate`/`design`/`review` 의 결론은 위 §1 Step 3.5 Critic 게이트를 `PASS` 로 통과해야 phase 를 전이한다. `REWORK` 는 같은 phase 에 머문다.
+
+## 3.1 실행 빈도와 예산 (30분 간격 운영)
+- Routine 이 30분 간격으로 돈다는 전제 하에, 한 실행은 **turn 예산의 상당 부분**을 쓰지 않도록 작업을 잘게 쪼갠다.
+  Critic 게이트가 있는 작업(Step 3.5)은 Critic 호출 자체가 turn 을 쓰므로, Builder 본 작업은 turn 한도의 약 60% 안에서 끝낸다.
+- 실행이 몰려서 이전 실행이 아직 끝나지 않았다면(다음 실행 시작 시 `state/run` 이 남아있고 방금 시작된 경우) 겹쳐 실행하지 말고
+  `state/inbox.md` 에 "겹침 감지, 이번 실행 skip" 을 기록한 뒤 즉시 종료한다 (Step 3.5, 구현 없이 바로 Step 4).
 
 ---
 
