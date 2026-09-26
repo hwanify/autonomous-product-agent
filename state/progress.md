@@ -151,3 +151,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: 사람이 실기기에서 "+ 새 타이머" 모달의 분/초 숫자 키패드를 쓰다가 "완료" 키가 없어 키보드가 안 내려가고 "시작" 버튼을 못 누르는 문제를 채팅으로 보고함. `components/NewTimerModal.tsx` 에 iOS 전용 `InputAccessoryView`("완료" 버튼, `Keyboard.dismiss()` 호출)와 `KeyboardAvoidingView`(시트가 키보드에 가려지지 않도록)를 추가, 오버레이 배경 탭으로도 키보드가 닫히게 함(D-017). `npx tsc --noEmit` 통과, 기존 테스트 35개 회귀 없음. README "알려진 한계"에 해결 내역 추가. current_task(T-015)는 계속 blocked 유지.
 - 산출물: product/components/NewTimerModal.tsx(수정), product/README.md
 - 다음 할 일: 사람이 다시 시도해서 타이머 생성 화면까지 정상 진행되는지, 그리고 원래 요청한 알림 검증(백그라운드/종료 상태)을 진행해서 결과를 state/inbox.md 에 남겨달라고 요청.
+
+## Run #19 — 2026-09-26 — phase: test → review
+- 작업: T-015 사람 회신 처리 — 실기기 검증 결과 확정
+- 결과: done (T-015 성공)
+- 한 일: 사람이 실기기에서 직접 테스트한 뒤 "정상적으로 알림은 오는데 앱을 껐다키면 ui는 사라져있어"라고 채팅으로 회신함. 이를 T-015 성공(핵심 가설 검증 완료)으로 판정 — mission.md §5 핵심 조건, D-007/D-009/D-011/D-015 가 반복적으로 조건부로 걸어뒀던 "백그라운드/종료 상태 알림"이 실제로 동작함이 확인됨. 같은 회신에 포함된 UI 미보존 문제(설계 문서가 이미 예견하고 review 단계 개선 후보로 남겨뒀던 항목)는 review 단계 검토 대상으로 확정. test phase 완료 조건(자동화 35개 통과 + 이번 핵심 수동 시나리오 성공)을 충족했다고 판단해 phase 를 `test`→`review` 전이(D-018). backlog 에 T-016(비판적 검토, docs/reviews/review-1.md, UI 미보존 이슈 포함) 등록. product/README.md 를 검증 완료 상태로 갱신(더 이상 "미검증" 문구 없음).
+- 산출물: product/README.md(갱신)
+- 다음 할 일: T-016 — review phase 비판적 검토 수행. 결론에는 Critic 게이트 적용 필요(§1 Step 3.5, review 는 대상 phase).
