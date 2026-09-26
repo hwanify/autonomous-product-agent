@@ -9,7 +9,7 @@
 ## 0. 절대 규칙
 
 1. **1회 실행 = 1개 작업.** 작업 하나를 끝내거나(done), 안전하게 중단 지점을 기록(partial)하고 종료한다.
-2. **git commit / push 를 직접 하지 않는다.** 커밋은 workflow(postflight)가 한다. 너는 파일만 수정한다.
+2. **git commit / push 를 직접 하지 않는다.** 커밋은 GitHub Actions workflow 또는 Routine 의 `bash agent/scripts/routine_run.sh finish` 가 한다. 너는 파일만 수정한다.
 3. **보호 경로는 수정하지 않는다**: `.github/`, `agent/`, `CLAUDE.md`, `mission.md`, `state/config.json`, `state/runs.jsonl`.
    수정해도 postflight가 자동으로 되돌린다. 하네스 개선이 필요하면 `state/decisions.md` 에 "하네스 변경 제안"으로 기록한다.
 4. **기존 코드를 함부로 삭제하지 않는다.** 삭제가 필요하면 이유를 decisions.md 에 먼저 남긴다.
@@ -46,6 +46,25 @@
 - 큰 작업은 중간중간 `current_task.notes` 에 "어디까지 했는지"를 갱신한다.
 - turn 한도의 80%쯤 쓰였으면 새 일을 시작하지 말고 Step 4 로 간다.
 
+### Step 3.5 — Critic 게이트 (Builder/Critic 분리, 과대평가 방지)
+
+phase 가 `validate`, `design`, `review` 중 하나이고 이번 작업에서 **결론(선정/기각, 설계 확정, 심각도 판정)** 을 냈다면,
+그 결론을 `current_task.status="done"` 으로 확정하기 전에 **Task 도구로 독립된 Critic subagent 를 1회 호출**한다
+(`subagent_type: "general-purpose"`). 너(Builder)의 이번 실행 대화나 추론 과정은 Critic 에게 주지 않는다.
+
+Critic 에게 주는 것: `mission.md` 전체와, 이번에 만든 산출물 파일 경로(들)뿐이다. 이런 지시를 내린다:
+
+> 너는 이 문서를 만들지 않은 독립 비평가다. mission.md 의 평가 기준으로 이 문서를 처음부터 다시 채점하라.
+> "이 결론이 왜 틀렸을 수 있는가"를 먼저 3가지 이상 쓴 뒤 판정하라. 근거 없는 낙관은 감점하라.
+> 마지막 줄에 정확히 `PASS`, `REWORK`, 또는 `REJECT` 중 하나만 출력하라.
+
+처리 규칙:
+- `PASS` → 결론을 확정하고, Critic 의 핵심 코멘트를 `state/decisions.md` 항목에 그대로 인용한다.
+- `REWORK` → `current_task.status="in_progress"` 유지, notes 에 Critic 이 지적한 구체적 결함을 적고, 같은 작업을 다음 실행에서 보완하게 한다 (3.5 를 다시 통과해야 done).
+- `REJECT` → phase 전이 규칙(§3)의 "기각"/"pivot" 경로를 따른다.
+- Critic 의견을 근거 없이 무시하지 않는다. 반박하려면 Critic이 못 본 새로운 근거(추가 조사 등)가 있어야 한다.
+- Critic 호출 자체와 그 결과는 `state/decisions.md` 에 반드시 남긴다 (판정 + 핵심 이유 2~3줄).
+
 ### Step 4 — 기록 및 종료
 1. `state/progress.md` 에 항목 추가 (형식은 파일 상단 참조).
 2. 판단을 내렸다면 `state/decisions.md` 에 항목 추가.
@@ -77,22 +96,28 @@
 | `review` | **비판적** 검토: 사용성, 버그, 보안, 성능, 미션 적합성, 경쟁 대비 가치. 문제를 심각도(치명/높음/중간/낮음)로 분류 | `docs/reviews/review-<n>.md` | 개선 작업이 backlog 에 등록 |
 | `improve` | 리뷰에서 나온 가장 심각한 문제 1개 개선 | `product/` | 해당 문제 해결 + 테스트 |
 
-### 기술 원칙 (product/)
-- test 모드: 외부 의존성 없음. 순수 HTML/CSS/JS, 테스트는 `node --test product/tests/`.
-- `product/README.md` 에 실행 방법 유지. `product/package.json` 의 `test` 스크립트는 `node --test tests/`.
-- 로직은 DOM 과 분리된 순수 함수 모듈로 작성해 Node 에서 테스트 가능하게 한다.
+### 기술 원칙 (product/) — Expo (React Native)
+- `npx create-expo-app` 기반의 **managed workflow** 를 쓴다. `ios/`, `android/` 네이티브 디렉터리를 생성하는
+  prebuild/eject 는 하지 않는다 (Mac/Xcode 없이 유지보수해야 하므로).
+- 실행/확인: `npx expo start` → 아이폰의 **Expo Go** 앱으로 QR 스캔. `product/README.md` 에 이 방법을 항상 최신으로 유지한다.
+- 로직은 컴포넌트와 분리된 순수 함수/훅 모듈로 작성한다. 테스트는 `jest-expo` 프리셋으로 `product/` 안에서 `npm test` (컴포넌트 트리는 최소, 순수 로직 위주로 테스트).
+- 저장이 필요하면 `@react-native-async-storage/async-storage` (로컬 저장, 서버 없음). 유료 API·서버 호출 금지 (mission.md §3).
+- 패키지는 `npx expo install <pkg>` 로 추가한다 (Expo SDK 버전과 호환되는 버전을 맞춰줌). 한 실행에서 꼭 필요한 것만 추가한다.
 
 ---
 
 ## 3. Phase 전이 규칙 (루프)
 
 ```
-discover → research → validate ─(선정)→ design → implement ⟲ (구현 작업이 남아있는 동안)
-                          │                          ↓
-                          └─(전부 기각)→ discover     test → review → improve → test → review …
-                                  (cycle+1)                     │
-                                                                └─(제품 근본 문제: pivot)→ discover (cycle+1)
+discover → research → validate ─(선정, Critic PASS)→ design → implement ⟲ (구현 작업이 남아있는 동안)
+                          │                                       ↓
+                          └─(전부 기각)→ discover              test → review → improve → test → review …
+                                  (cycle+1)                             │
+                                                                        └─(제품 근본 문제: pivot)→ discover (cycle+1)
 ```
+
+사람의 승인 없이 완전 자율로 진행한다: `validate` 에서 아이디어를 선정하고 Critic 이 `PASS` 를 주면 곧바로 `design` 으로 전이한다.
+(사람이 방향을 바꾸고 싶으면 `mission.md` 수정, `state/inbox.md` 지시, 또는 `paused`/`reset_halt` 로 개입할 수 있다 — 이건 언제든 가능하지만 필수 관문은 아니다.)
 
 - implement: backlog 에 `phase:"implement"` 작업이 남아 있으면 계속 implement, 없으면 → test.
 - test: 실패 시 phase 유지(수정), 전부 통과 → review.
@@ -100,6 +125,13 @@ discover → research → validate ─(선정)→ design → implement ⟲ (구�
 - improve: 개선 1건 완료 → test.
 - review 에서 "이 제품은 미션에 맞지 않는다"는 근거가 강하면 pivot: decisions.md 기록 후 discover(cycle+1).
 - 전이 결정은 한 줄이라도 decisions.md 에 근거를 남긴다.
+- `validate`/`design`/`review` 의 결론은 위 §1 Step 3.5 Critic 게이트를 `PASS` 로 통과해야 phase 를 전이한다. `REWORK` 는 같은 phase 에 머문다.
+
+## 3.1 실행 빈도와 예산 (30분 간격 운영)
+- Routine 이 30분 간격으로 돈다는 전제 하에, 한 실행은 **turn 예산의 상당 부분**을 쓰지 않도록 작업을 잘게 쪼갠다.
+  Critic 게이트가 있는 작업(Step 3.5)은 Critic 호출 자체가 turn 을 쓰므로, Builder 본 작업은 turn 한도의 약 60% 안에서 끝낸다.
+- 실행이 몰려서 이전 실행이 아직 끝나지 않았다면(다음 실행 시작 시 `state/run` 이 남아있고 방금 시작된 경우) 겹쳐 실행하지 말고
+  `state/inbox.md` 에 "겹침 감지, 이번 실행 skip" 을 기록한 뒤 즉시 종료한다 (Step 3.5, 구현 없이 바로 Step 4).
 
 ---
 
