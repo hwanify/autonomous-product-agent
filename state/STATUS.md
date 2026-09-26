@@ -5,12 +5,12 @@
 - **Mode**: `test` | paused: `False` | schedule: `False`
 - **Phase**: `test` (cycle 1)
 - **Product**: 요리용 멀티 타이머 — 여러 요리를 동시에 할 때 라벨 붙여 여러 타이머를 돌리고, 앱이 꺼져 있어도 확실하게 알림이 울리는 무료 Expo 앱 [in_development]
-- **Runs**: total 17 / max 500, success 17, failed 0, consecutive failures 0
-- **Last run**: #17 `success` at 2026-09-26T09:30:12Z — Test: fixed missing npm install step in README (D-016), T-015 still blocked
+- **Runs**: total 18 / max 500, success 18, failed 0, consecutive failures 0
+- **Last run**: #18 `success` at 2026-09-26T09:39:28Z — Test: fixed number-pad keyboard dismiss bug in modal (D-017)
 
 ## Current task
 - `T-015` [blocked] [사람 hand-off] 실기기(Expo Go) 수동 시나리오 검증 요청 (phase test)
-- 🙋 **사람의 결정 필요**: Run #17 업데이트: 사람이 처음 시도했을 때 'Unable to resolve module @react-native-async-storage/async-storage' 에러(스크린샷)를 받음 — 원인은 README 에 npm install 단계가 빠져있던 문서 버그로 확인·수정함(D-016, 제품 결함 아님, pivot 대상 아님). 여전히 사람에게 요청 중: product/README.md 최신 안내대로(cd product && npm install && npx expo start --tunnel) 다시 시도해서 (1) '라면' 4분, '계란' 9분 타이머를 동시에 시작 (2) 화면을 끄거나 앱을 완전히 스와이프 종료 (3) 각 타이머 예약 시각에 소리+배너 알림이 실제로 오는지 확인 (4) 하나를 일시정지 후 재개했을 때도 알림이 재개 시점 기준으로 정확히 오는지 확인. 결과(성공/실패, 어떤 상태에서 테스트했는지)를 state/inbox.md 의 Pending 에 적어 달라. 성공이면 review phase 로 전이, 실패면(이번엔 실제 알림 동작 실패일 때만) decisions.md 기록 후 explore(cycle+1) pivot 검토(D-007/D-015). 회신 없으면 다음 실행들은 blocked 유지.
+- 🙋 **사람의 결정 필요**: Run #17: README npm install 누락 수정(D-016). Run #18: 사람이 실기기에서 새 타이머 입력 중 숫자 키패드에 '완료' 버튼이 없어 키보드가 안 내려가고 '시작' 버튼을 못 누르는 문제 발견 — NewTimerModal 에 InputAccessoryView(완료 버튼)+KeyboardAvoidingView 추가로 수정(D-017). 여전히 사람에게 요청 중: product/README.md 안내대로 다시 시도해서 (1) '라면' 4분, '계란' 9분 타이머를 동시에 시작 (2) 화면을 끄거나 앱을 완전히 스와이프 종료 (3) 각 타이머 예약 시각에 소리+배너 알림이 실제로 오는지 확인 (4) 일시정지→재개 시에도 알림이 정확한지 확인. 결과를 state/inbox.md 의 Pending 에 적어 달라. 성공이면 review phase 로 전이, (실제 알림 동작) 실패면 decisions.md 기록 후 explore(cycle+1) pivot 검토(D-007/D-015). 회신 없으면 다음 실행들은 blocked 유지.
 
 ## Backlog (top 10)
 - (비어 있음)

@@ -54,6 +54,7 @@ lib/presets.ts                 AsyncStorage 래퍼: 프리셋 저장/불러오�
 
 ## 알려진 한계 / 다음 단계 (test phase 로 이연됨)
 - **(해결됨, Run #17)** 사람이 실기기 검증을 처음 시도했을 때 `Unable to resolve module @react-native-async-storage/async-storage` 에러가 발생했습니다. 원인은 이 문서의 실행법에 `npm install` 단계가 빠져 있었기 때문입니다(패키지 자체는 `package.json`/`package-lock.json` 에 정상적으로 있음). 위 "실행" 섹션에 `npm install` 단계를 추가했습니다 — 다시 시도해주세요.
+- **(해결됨, Run #18)** "+ 새 타이머" 모달의 분/초 입력칸(숫자 키패드)에 iOS 기본적으로 "완료" 키가 없어 키보드가 안 내려가고 "시작" 버튼을 못 누르는 문제가 있었습니다. 키보드 위에 "완료" 버튼(InputAccessoryView)을 추가하고, 모달이 키보드에 가려지지 않도록 KeyboardAvoidingView 로 감쌌습니다(D-017).
 - **이 앱의 핵심 가치("확실한 알림")가 아직 실제 아이폰에서 검증되지 않았습니다.** 사람이 구현을 먼저 진행하도록
   지시해(`state/decisions.md` D-011) 이 검증을 `test` phase 로 미뤘습니다. `test` phase 에서 가장 먼저 해야 할 일은
   이 앱을 실기기(Expo Go)에서 열어 타이머를 하나 만든 뒤 화면을 끄거나 앱을 완전히 종료하고, 예약된 시간에 소리+배너

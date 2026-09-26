@@ -1,11 +1,27 @@
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import {
+  InputAccessoryView,
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 interface Props {
   visible: boolean;
   onClose: () => void;
   onCreate: (label: string, durationSeconds: number, saveAsPreset: boolean) => void;
 }
+
+// iOS 숫자 키패드(number-pad)는 자체적으로 "완료" 키가 없어 키보드가 안 내려가는 문제가 있다.
+// InputAccessoryView 로 키보드 위에 "완료" 버튼을 띄워 닫을 수 있게 한다(Android는 필요 없음).
+const ACCESSORY_ID = 'newTimerModalAccessory';
 
 export default function NewTimerModal({ visible, onClose, onCreate }: Props) {
   const [label, setLabel] = useState('');
@@ -35,7 +51,11 @@ export default function NewTimerModal({ visible, onClose, onCreate }: Props) {
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
-      <View style={styles.overlay}>
+      <KeyboardAvoidingView
+        style={styles.overlay}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <Pressable style={styles.overlayBackground} onPress={() => Keyboard.dismiss()} />
         <View style={styles.sheet}>
           <Text style={styles.title}>새 타이머</Text>
           <TextInput
@@ -43,6 +63,7 @@ export default function NewTimerModal({ visible, onClose, onCreate }: Props) {
             placeholder="라벨 (예: 라면)"
             value={label}
             onChangeText={setLabel}
+            returnKeyType="done"
           />
           <View style={styles.timeRow}>
             <TextInput
@@ -51,6 +72,7 @@ export default function NewTimerModal({ visible, onClose, onCreate }: Props) {
               keyboardType="number-pad"
               value={minutes}
               onChangeText={setMinutes}
+              inputAccessoryViewID={Platform.OS === 'ios' ? ACCESSORY_ID : undefined}
             />
             <Text style={styles.timeSeparator}>분</Text>
             <TextInput
@@ -59,6 +81,7 @@ export default function NewTimerModal({ visible, onClose, onCreate }: Props) {
               keyboardType="number-pad"
               value={seconds}
               onChangeText={setSeconds}
+              inputAccessoryViewID={Platform.OS === 'ios' ? ACCESSORY_ID : undefined}
             />
             <Text style={styles.timeSeparator}>초</Text>
           </View>
@@ -75,7 +98,16 @@ export default function NewTimerModal({ visible, onClose, onCreate }: Props) {
             </Pressable>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
+      {Platform.OS === 'ios' && (
+        <InputAccessoryView nativeID={ACCESSORY_ID}>
+          <View style={styles.accessoryBar}>
+            <Pressable onPress={() => Keyboard.dismiss()}>
+              <Text style={styles.accessoryButtonText}>완료</Text>
+            </Pressable>
+          </View>
+        </InputAccessoryView>
+      )}
     </Modal>
   );
 }
@@ -83,8 +115,15 @@ export default function NewTimerModal({ visible, onClose, onCreate }: Props) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'flex-end',
+  },
+  overlayBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.4)',
   },
   sheet: {
     backgroundColor: '#fff',
@@ -144,5 +183,20 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: '700',
+  },
+  accessoryBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    backgroundColor: '#f3f4f6',
+    padding: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#d1d5db',
+  },
+  accessoryButtonText: {
+    color: '#2563eb',
+    fontWeight: '700',
+    fontSize: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
   },
 });

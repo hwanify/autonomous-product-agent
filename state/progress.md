@@ -144,3 +144,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: 사람이 채팅으로 실기기 테스트 중 `Unable to resolve module @react-native-async-storage/async-storage` 에러 스크린샷을 전달함. `product/package.json`·`package-lock.json` 을 확인해 패키지 자체는 정상 등록돼 있음을 확인하고, 원인이 `product/README.md` 의 실행 안내에 `npm install` 단계가 빠져 있던 문서 버그임을 특정(D-016). README 를 수정해 `npm install` 단계와 Metro 캐시 초기화(`-c`) 안내를 추가하고, "알려진 한계" 섹션에 이번 이슈와 해결 내용을 기록. 이 문제는 제품의 핵심 가치(알림 신뢰성)에 대한 부정적 신호가 아니므로 pivot 대상이 아님을 명시. current_task(T-015)는 계속 blocked 유지하며, 사람에게 수정된 안내대로 다시 시도해달라고 요청.
 - 산출물: product/README.md(수정)
 - 다음 할 일: 사람이 재시도 후 실제 알림 동작 결과를 state/inbox.md 에 남기면, 성공→review phase 전이, (실제 알림이 안 오는) 실패→decisions.md 기록 후 explore(cycle+1) pivot 검토(D-007/D-015).
+
+## Run #18 — 2026-09-26 (T-015 blocked, 계속) — phase: test
+- 작업: T-015 사람 hand-off 검증 중 발견된 UI 버그(키보드 안 내려감) 수정
+- 결과: blocked (계속 — 사람 재시도 필요)
+- 한 일: 사람이 실기기에서 "+ 새 타이머" 모달의 분/초 숫자 키패드를 쓰다가 "완료" 키가 없어 키보드가 안 내려가고 "시작" 버튼을 못 누르는 문제를 채팅으로 보고함. `components/NewTimerModal.tsx` 에 iOS 전용 `InputAccessoryView`("완료" 버튼, `Keyboard.dismiss()` 호출)와 `KeyboardAvoidingView`(시트가 키보드에 가려지지 않도록)를 추가, 오버레이 배경 탭으로도 키보드가 닫히게 함(D-017). `npx tsc --noEmit` 통과, 기존 테스트 35개 회귀 없음. README "알려진 한계"에 해결 내역 추가. current_task(T-015)는 계속 blocked 유지.
+- 산출물: product/components/NewTimerModal.tsx(수정), product/README.md
+- 다음 할 일: 사람이 다시 시도해서 타이머 생성 화면까지 정상 진행되는지, 그리고 원래 요청한 알림 검증(백그라운드/종료 상태)을 진행해서 결과를 state/inbox.md 에 남겨달라고 요청.
