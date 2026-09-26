@@ -29,12 +29,17 @@ class SandboxRepo:
                 shutil.copytree(src, self.dir / rel, ignore=shutil.ignore_patterns("__pycache__"))
             else:
                 shutil.copy(src, self.dir / rel)
-        # start from the pristine initial state
+        # start from the pristine initial state, regardless of the live repo's current
+        # operational config (e.g. it may be paused right now for real).
         state = common.load_json(self.dir / "state" / "state.json")
         state.update(current_task=None, run=None, last_run=None, halted=False, halt_reason=None,
                      handled_issues=[], run_summary="")
         state["stats"] = {k: 0 for k in common.STATS_KEYS}
         common.save_json(self.dir / "state" / "state.json", state)
+        cfg_path = self.dir / "state" / "config.json"
+        cfg = common.load_json(cfg_path)
+        cfg["paused"] = False
+        common.save_json(cfg_path, cfg)
         self.git("init", "-q")
         self.git("-c", "user.email=t@t", "-c", "user.name=t", "add", "-A")
         self.git("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "init")
