@@ -1,13 +1,13 @@
-# Run Context — Run #20
+# Run Context — Run #21
 
 > preflight 가 매 실행마다 새로 생성하는 파일입니다.
 
-- 시작 시각: 2026-09-26T10:04:11Z
+- 시작 시각: 2026-09-26T11:04:40Z
 - 모드: **test**
 - turn 한도: **90** (80% 전에 기록 단계로)
-- 현재 phase: `review` / cycle 1
-- 누적 실행: 19 / 최대 500
-- 이전 실행: #19 `success` — Test: T-015 succeeded, notifications verified on device, moved to review
+- 현재 phase: `improve` / cycle 1
+- 누적 실행: 20 / 최대 500
+- 이전 실행: #20 `success` — Review: 3 high-severity findings (Critic PASS), moved to improve
 
 ## TEST 모드 제한
 - npm/npx 는 허용되지만 (Expo 앱이라 필요) pip install 은 금지. git push/commit 은 여전히 금지.

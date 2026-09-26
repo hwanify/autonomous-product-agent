@@ -116,7 +116,17 @@
   ],
   "run_summary": "",
   "handled_issues": [],
-  "run": null,
+  "run": {
+    "number": 21,
+    "mode": "test",
+    "status": "running",
+    "started_at": "2026-09-26T11:04:40Z",
+    "event": "routine",
+    "dry_run": false,
+    "recovery": false,
+    "url": null,
+    "issues": []
+  },
   "last_run": {
     "number": 20,
     "outcome": "success",
