@@ -49,3 +49,11 @@
 - 결정: interval-timer 후보를 **기각**한다. 다음 우선순위 후보로 진행한다.
 - 근거: 재점수 15점(기준 미달) + Critic PASS. 개선사항(Critic 제안): 향후 문서에서 Pain(문제 자체의 강도)과 Gap(경쟁 제품의 빈틈)을 방법론적으로 분리해서 채점할 것.
 - 되돌릴 조건: 한국 시장 등 미조사 영역에서 새로운 강한 차별점 근거가 나오면 재고려 가능 (현재는 backlog 에 없음)
+
+## D-005 — 2026-09-26 — Run #4 — multi-timer 기각 제안 → Critic REWORK
+- 맥락: T-005. docs/research/multi-timer.md(기존 Run #2 조사, 새 조사 없이 재검토)를 근거로 재점수(Pain4/Gap2/Feasibility5/Demonstrability5/Differentiation2 = 18점, 기준 통과)했으나, Gap·Differentiation 이 낮다는 정성적 근거로 docs/validation/multi-timer.md 에서 **기각(REJECT)**을 제안함.
+- Critic 게이트: 독립 subagent(mission.md + docs/validation/multi-timer.md + docs/research/multi-timer.md 만 제공) 호출 결과 **REWORK**.
+  - Critic 핵심 코멘트(원문 인용): "'가장 강한 경쟁자 MultiTimer에는 알림 문제가 없다'는 주장은 실제로 검증된 게 아니라 단지 '그런 리뷰를 못 찾았다'는 것뿐" (부재 증거를 근거로 삼음), "research.md가 이미 '조리 프리셋 라이브러리'라는 잠재적 차별점을 발견했는데... 스코프를 조정해 재평가하는 편이 훨씬 저렴한데 그 옵션을 시도하지 않았다", "'숫자는 통과(18) but 정성적으로 기각'이라는 논리는 원칙적으로 방어 가능하다... 문제는 이 문서가 그 재량을 쓰면서도 왜 이번엔 숫자 합계보다 정성 판단을 우선해야 하는지에 대한 원칙을 제시하지 않고, 결정 전에 시도 가능했던 저비용 검증을 건너뛰었다는 점". 최종 지시: "(a) MultiTimer 알림 신뢰성에 대한 타겟 검색 1회, (b) 조리 프리셋 스코프로 재점수화 시도, 이 두 가지를 마치지 않고 기각을 확정한 것은 근거 부족".
+- 결정: 결론을 확정하지 않는다. `current_task`(T-005)를 `in_progress` 로 유지하고, 위 (a)(b) 두 가지를 다음 실행에서 보완한 뒤 Step 3.5 Critic 게이트를 다시 통과해야 done 처리한다.
+- 근거: CLAUDE.md §1 Step 3.5 처리 규칙("REWORK → in_progress 유지, notes 에 구체적 결함 기록, 다음 실행에서 보완") 그대로 따름. Critic 의견에 반박할 새 근거가 없으므로 그대로 수용.
+- 되돌릴 조건: 다음 실행에서 (a)(b) 보완 후 재상정, 새 Critic PASS/REJECT 로 확정
