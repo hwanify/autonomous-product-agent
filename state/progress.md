@@ -87,3 +87,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 한 일: `jest`, `jest-expo`, `@types/jest` 설치 후 `package.json` 에 `"test": "jest"` 스크립트와 `jest-expo` 프리셋 설정, `tsconfig.json` 에 `"types": ["jest"]` 추가. `lib/timer.ts` 에 순수 함수(`createTimer`, `getRemainingSeconds`, `isExpired`, `pauseTimer`, `resumeTimer`, `markDone`, `tick`, 리스트 연산 `addTimer`/`removeTimer`/`updateTimer`/`tickAll`)를 작성 — 타임스탬프(`now` 인자 주입) 기반이라 테스트가 실제 시간에 의존하지 않음. `lib/__tests__/timer.test.ts` 에 일시정지/재개 반복 시 오차 없음, 멱등성(이미 paused/running/done 인 상태에 같은 연산을 다시 적용해도 불변), 여러 타이머 독립적 관리(tickAll) 등을 포함해 21개 테스트 작성 — 전부 통과(`npm test`). `npx tsc --noEmit` 통과. `npx expo lint` 는 D-010 과 같은 네트워크 정책 문제로 실패해 건너뜀(D-012, T-009 범위 밖). `product/README.md` 현재 상태 갱신. implement phase 는 Critic 게이트 대상 아님.
 - 산출물: product/lib/timer.ts, product/lib/__tests__/timer.test.ts, product/package.json, product/tsconfig.json, product/README.md
 - 다음 할 일: T-010 — lib/notifications.ts 알림 스케줄링 래퍼(T-007 데모 코드를 재사용 가능한 모듈로 정리) + 유닛 테스트
+
+## Run #10 — 2026-09-26 04:15 UTC — phase: implement
+- 작업: T-010 lib/notifications.ts 알림 스케줄링 래퍼(T-007 데모를 재사용 가능한 모듈로 정리) + 유닛 테스트
+- 결과: done
+- 한 일: `product/lib/notifications.ts` 에 `configureNotificationHandler`, `ensureNotificationPermission`, `scheduleTimerNotification`, `cancelTimerNotification` 4개 함수로 `expo-notifications` 를 래핑. App.tsx 에 흩어져 있던 알림 로직(T-007 데모)을 이 모듈 호출로 교체해 컴포넌트에서 분리(설계 원칙 준수). `lib/__tests__/notifications.test.ts` 에서 `jest.mock('expo-notifications', ...)` 로 모킹해 권한 허용/거부/미결정 3가지 분기, TIME_INTERVAL 트리거+repeats:false 검증, 취소 호출 등 7개 테스트 작성 — 전부 통과. `npx tsc --noEmit` 통과, 전체 테스트 28개(timer 21 + notifications 7) 통과.
+- 산출물: product/lib/notifications.ts, product/lib/__tests__/notifications.test.ts, product/App.tsx(리팩터링), product/README.md
+- 다음 할 일: T-011 — lib/presets.ts 프리셋 저장/불러오기(AsyncStorage) + 유닛 테스트

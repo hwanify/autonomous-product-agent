@@ -1,20 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import * as Notifications from 'expo-notifications';
+import {
+  configureNotificationHandler,
+  ensureNotificationPermission,
+  scheduleTimerNotification,
+} from './lib/notifications';
 
 // 검증 데모(T-007/T-008): 앱이 백그라운드거나 완전히 종료된 상태에서도
 // 예약된 로컬 알림이 소리+배너로 실제로 울리는지 Expo Go 실기기에서 확인하기 위한 화면.
 // 이 검증이 이 제품 선정의 핵심 전제다 (docs/decisions.md D-007/D-009 참조).
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
+configureNotificationHandler();
 
 const DELAYS_SECONDS = [10, 30, 60];
 
@@ -23,36 +20,17 @@ export default function App() {
   const [lastScheduledAt, setLastScheduledAt] = useState<string | null>(null);
 
   useEffect(() => {
-    requestPermission();
+    ensureNotificationPermission().then((granted) => {
+      setPermissionStatus(granted ? '허용됨' : '거부됨');
+    });
   }, []);
-
-  async function requestPermission() {
-    const current = await Notifications.getPermissionsAsync();
-    if (current.status === 'granted') {
-      setPermissionStatus('허용됨');
-      return;
-    }
-    const requested = await Notifications.requestPermissionsAsync();
-    setPermissionStatus(requested.status === 'granted' ? '허용됨' : '거부됨');
-  }
 
   async function scheduleDemo(seconds: number) {
     if (permissionStatus !== '허용됨') {
       Alert.alert('알림 권한이 없습니다', '설정에서 알림 권한을 허용해주세요.');
       return;
     }
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: '타이머 데모',
-        body: `${seconds}초 타이머가 끝났습니다! (화면이 꺼져있거나 앱이 종료된 상태에서도 이 알림이 왔나요?)`,
-        sound: true,
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-        seconds,
-        repeats: false,
-      },
-    });
+    await scheduleTimerNotification(`${seconds}초 데모`, seconds);
     const fireTime = new Date(Date.now() + seconds * 1000).toLocaleTimeString('ko-KR');
     setLastScheduledAt(`${seconds}초 뒤 (약 ${fireTime}) 알림 예약됨`);
   }
