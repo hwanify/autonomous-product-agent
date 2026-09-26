@@ -6,7 +6,7 @@
   "commit_target": "work_branch",
   "work_branch": "agent/work",
   "open_pull_request": true,
-  "max_total_runs": 30,
+  "max_total_runs": 500,
   "max_consecutive_failures": 3,
   "inbox_issue_label": "agent-inbox",
   "model": "",
@@ -20,10 +20,10 @@
   ],
   "profiles": {
     "test": {
-      "max_turns": 25,
+      "max_turns": 32,
       "allowed_tools": [
         "Read", "Write", "Edit", "MultiEdit", "Glob", "Grep", "LS", "TodoWrite",
-        "WebSearch", "WebFetch",
+        "Task", "WebSearch", "WebFetch",
         "Bash(ls:*)", "Bash(cat:*)", "Bash(head:*)", "Bash(tail:*)", "Bash(wc:*)",
         "Bash(mkdir:*)", "Bash(find:*)",
         "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)",
@@ -37,10 +37,10 @@
       ]
     },
     "live": {
-      "max_turns": 60,
+      "max_turns": 70,
       "allowed_tools": [
         "Read", "Write", "Edit", "MultiEdit", "Glob", "Grep", "LS", "TodoWrite",
-        "WebSearch", "WebFetch",
+        "Task", "WebSearch", "WebFetch",
         "Bash(ls:*)", "Bash(cat:*)", "Bash(head:*)", "Bash(tail:*)", "Bash(wc:*)",
         "Bash(mkdir:*)", "Bash(find:*)", "Bash(rm:*)", "Bash(mv:*)", "Bash(cp:*)",
         "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)",
