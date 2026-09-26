@@ -46,9 +46,10 @@
 
 ## 6. 사람의 개입 지점
 
-- **아이디어 승인 (필수 관문)**: `validate` 단계에서 에이전트가 아이디어를 하나 선정하면, 곧바로 설계·구현에 들어가지 않고
-  사람의 승인을 기다린다 (CLAUDE.md §3 참조). `state/STATUS.md` 에 "🙋 사람의 결정 필요"로 표시되며,
-  `state/inbox.md` 에 `승인: T-00X` 또는 `거부: T-00X (이유)` 를 적으면 다음 실행에서 반영된다.
+완전 자율 운영이 기본이다. 아이디어 선정 등 모든 결정은 사람의 승인 없이 진행된다 (검증은 CLAUDE.md 의 Critic 게이트가 담당).
+사람은 아래 방법으로만 방향을 바꾼다:
+
+- `mission.md`(이 파일) 를 수정해 범위·제약·기준 자체를 바꾼다
 - `state/inbox.md` 또는 `agent-inbox` 라벨 Issue 로 지시
 - `state/config.json` 의 `paused: true` 로 즉시 정지
 - 에이전트가 `blocked` 상태로 사람의 결정을 요청하면 `state/STATUS.md` 에 표시됨

@@ -1,8 +1,8 @@
 # autonomous-product-agent
 
-자율적으로 **Expo(React Native) 네이티브 앱**을 **발굴 → 경쟁 조사 → 검증 → (사람 승인) → MVP 설계 → 구현 → 테스트 → 비판적 검토 → 개선**
+완전 자율로 **Expo(React Native) 네이티브 앱**을 **발굴 → 경쟁 조사 → 검증 → MVP 설계 → 구현 → 테스트 → 비판적 검토 → 개선**
 하는 Claude Code 에이전트. GitHub Actions/Claude Code Routine 에서 실행되며, 사람은 iPhone(GitHub 앱 + Expo Go 앱)만으로 운영·확인할 수 있습니다.
-아이디어가 정해지면 **곧바로 구현하지 않고 사람의 승인을 기다립니다** (state/inbox.md 에 `승인: T-00X`).
+사람 승인 없이 진행되며(검증은 독립 Critic subagent 가 담당), 방향을 바꾸고 싶을 때만 `mission.md`/`state/inbox.md` 로 개입합니다.
 
 ## 빠른 확인
 - 현재 상태: [`state/STATUS.md`](state/STATUS.md) (첫 실행 후 생성)
