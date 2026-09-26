@@ -130,3 +130,10 @@ Agent가 매 실행마다 아래에 새 항목을 **추가**합니다 (기존 �
 - 결정: phase 는 `test` 유지(전이하지 않음) — 핵심 수동 시나리오(특히 알림 신뢰성)가 아직 미검증이라 완료 조건을 충족하지 못했다고 판단. test phase 는 Critic 게이트 대상이 아니므로(§1 Step 3.5, explore/design/review 만 해당) Critic 호출 없이 이 판단을 내림.
 - 산출물: docs/reviews/test-1.md
 - 다음 할 일: T-015 — 사람에게 실기기(Expo Go) 수동 검증 요청, current_task blocked 전환, state/inbox.md 회신 대기.
+
+## Run #16 — 2026-09-26 09:03 UTC — phase: test
+- 작업: T-015 [사람 hand-off] 실기기(Expo Go) 수동 시나리오 검증 요청
+- 결과: blocked (사람 결정/확인 필요)
+- 한 일: `current_task` 를 blocked 로 전환하고 구체적 검증 요청을 notes 에 기록: (1) '라면' 4분+'계란' 9분 타이머 동시 시작 (2) 화면 끄기/앱 완전 종료 (3) 예약 시각에 소리+배너 알림이 실제로 오는지 확인 (4) 일시정지→재개 시에도 알림이 재개 시점 기준으로 정확한지 확인. 결과를 state/inbox.md 에 남겨달라고 요청. backlog 를 비워 다음 실행들이 이 blocked 상태를 유지하며 다른 작업을 임의로 시작하지 않도록 함(D-015 의 T-015 정의를 그대로 따름).
+- 산출물: 없음(상태 파일만 갱신)
+- 다음 할 일: 사람 회신 대기. 회신이 오면 성공→review phase 전이, 실패→decisions.md 기록 후 explore(cycle+1) pivot 검토(D-007/D-015).
